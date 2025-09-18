@@ -1,0 +1,264 @@
+ul, li {
+	list-style-type: none;
+}
+
+.olTileImage {
+    -webkit-transform: none !important;
+    -webkit-backface-visibility: visible !important;
+}
+
+/* Ext JS overrides */
+.legend {
+    padding-left: 18px;
+}
+
+.x-grid-cell {
+    background-color: transparent;
+}
+.x-grid-cell-inner {
+    padding: 7px 0px 5px 5px;
+}
+
+.x-grid-cell-inner .x-action-col-icon {
+	width: 22px;
+	height: 22px;
+}
+
+.x-grid-cell-row-checker .x-grid-cell-inner {
+    padding: 4px 0px 5px 5px;
+}
+
+.x-grid-with-col-lines .x-grid-cell {
+    border-right-width: 1px;
+}
+.x-grid-with-row-lines .x-grid-td {
+    border-bottom-width: 1px;
+}
+.x-grid-cell-inner-treecolumn {
+    border-bottom-width: 0px;
+}
+.x-tree-icon-parent {
+    width: 0px;
+}
+.x-tree-icon-leaf {
+    width: 0px;
+}
+.x-tree-node-text {
+    font-size: 13px;
+    font-weight: normal;
+    vertical-align: top;
+}
+
+.x-tip {
+  width: auto !important;
+}
+ 
+.x-tip-body {
+  width: auto !important;
+}
+ 
+.x-tip-body span {
+  width: auto !important;
+}
+
+/* Action icons */
+.action-fullextent {
+	background-image: url("../images/oep-tools-icons/zoom_to_extent.png");
+}
+.action-print {
+	background-image: url("../images/oep-tools-icons/print.png");
+}
+.action-identify {
+	background-image: url("../images/oep-tools-icons/info.png");
+}
+.action-popup {
+	background-image: url("../images/oep-tools-icons/info.png");
+}
+.action-permalink {
+    background-image: url("../images/oep-tools-icons/chain.png");
+}
+.action-measureline {
+	background-image: url("../images/oep-tools-icons/measure_line.png");
+}
+.action-measurearea {
+	background-image: url("../images/oep-tools-icons/measure_area.png");
+}
+.action-deletemeasure {
+	background-image: url("../images/oep-tools-icons/EraseMeassure.png");
+}
+.action-drawobject {
+	background-image: url("../images/oep-tools-icons/draw_geometry.png");
+}
+.action-drawline {
+	background-image: url("../images/oep-tools-icons/draw_line.png");
+}
+.action-drawpoint {
+	background-image: url("../images/oep-tools-icons/draw_point.png");
+}
+.action-drawpolygon {
+	background-image: url("../images/oep-tools-icons/DrawPolygon.png");
+}
+.action-drawgeometry {
+	background-image: url("../images/oep-tools-icons/draw_free.png");
+}
+.action-drawtext {
+	background-image: url("../images/oep-tools-icons/DrawText.png");
+}
+.action-draw-l {
+	background-image: url("../images/oep-tools-icons/geometry_l.png");
+}
+.action-draw-octagon {
+	background-image: url("../images/oep-tools-icons/geometry_octagon.png");
+}
+.action-draw-square {
+	background-image: url("../images/oep-tools-icons/geometry_square.png");
+}
+.action-draw-d {
+	background-image: url("../images/oep-tools-icons/geometry_d.png");
+}
+.action-modifygeometry {
+	background-image: url("../images/oep-tools-icons/edit_geometry.png");
+}
+.action-selectgeometry {
+	background-image: url("../images/oep-tools-icons/mouse.png");
+}
+.action-deletegeometry {
+	background-image: url("../images/oep-tools-icons/erase.png");
+}
+.action-deleteallfeatures {
+	background-image: url("../images/oep-tools-icons/erase_all.png");
+}
+.action-remove {
+	background-image: url("../images/oep-tools-icons/trash.png");
+}
+.action-detailreport {
+    background-image: url("../images/oep-tools-icons/info.png");
+}
+.action-load {
+    background-image: url("../images/load.png");
+}
+.action-none {
+	background-image: none;
+	width: 0px !important;
+	height: 0px !important;
+}
+
+
+/* Zoom tool icons */
+
+.zoomtools-minus {
+    background-image: url("../images/oep-tools-icons/minus.png");
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.zoomtools-plus {
+    background-image: url("../images/oep-tools-icons/plus.png");
+}
+
+
+/* ObjectConfig view icons */
+
+.objectconfig-radio-l, .action-draw-L {
+	width: 16px;
+    height: 16px;
+    background-position: -4px -4px;
+    background-image: url("../images/figur-L.png");
+    border: 0px;
+}
+.objectconfig-radio-o, .action-draw-O {
+    width: 16px;
+    height: 16px;
+    background-position: -4px -4px;
+    background-image: url("../images/figur-O.png");
+    border: 0px;
+}
+.objectconfig-radio-r, .action-draw-R {
+    width: 16px;
+    height: 16px;
+    background-position: -4px -4px;
+    background-image: url("../images/figur-R.png");
+    border: 0px;
+}
+.objectconfig-radio-d, .action-draw-D {
+    width: 16px;
+    height: 16px;
+    background-position: -4px -4px;
+    background-image: url("../images/figur-D.png");
+    border: 0px;
+}
+
+/* custom action icons */
+
+.action-draweldstad {
+	background-image: url("../images/draw_point.png");
+}
+
+/* attribution styles */
+
+.unselectable {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+   cursor: default;
+}
+
+.attribution {
+	position: absolute;
+	bottom:0px;
+	right:0px;
+}
+
+.oep-popup {
+    overflow: visible;
+}
+.oep-popup-anc {
+    background: transparent url(../images/anchor.png) no-repeat 0 0;
+    height: 16px;
+    width: 31px;
+    position: absolute;
+}
+.oep-popup-body {
+    padding: 5px;
+}
+.oep-show-coordinate {
+	background: none;
+	background-color: none;
+	color: #000000;
+	font-size: 10px;
+	border: none;
+	padding: 0;
+	height: auto;
+}
+/* Overwrite OpenLayers scaleline classes */ 
+.olControlScaleLine {
+	position: absolute;
+	bottom: 20px;
+	left: 20px;
+}
+.olControlScaleLineTop {
+	font-size: 10px;
+	border: solid 1px black;
+	border-top: none;
+}
+.olControlScaleLineBottom {
+	height: 0px;
+	border: none;
+	overflow: hidden;
+}
+.oep-layerloading {
+	background-image: url('../ext-theme-oep/images/tree/loading.png') !important;
+	background-position: right !important;
+	background-repeat: no-repeat;
+	color: #cccccc !important; 
+}
+.oep-layererror {
+	background-color: #ffeeee !important;
+	color: #cccccc !important;
+}
+
+.disabled-opacity div input:nth-of-type(1) {
+  opacity: 0.3;
+}

@@ -1,0 +1,49 @@
+@CHARSET "ISO-8859-1";
+
+#updateMultiTreeQueryForm select[name='providerIdentifier'] {
+	width: auto;
+}
+
+.multitreequery .fancytree-treefocus span.fancytree-focused span.fancytree-title {
+	border-color: #FFF;
+}
+
+.multitreequery .fancytree-treefocus span.fancytree-focused.fancytree-active span.fancytree-title {
+	border-color: #1d8034;
+}
+
+.multitreequery .fancytree-treefocus span.fancytree-active .fancytree-title, .fancytree-treefocus span.fancytree-selected .fancytree-title,
+.multitreequery span.fancytree-active .fancytree-title, span.fancytree-selected .fancytree-title {
+	border-color: #1d8034;
+	background: linear-gradient(to bottom,#1d8034 0,#136C28 100%);
+	color: #FFF;
+}
+
+.multitreequery .leafselection span.fancytree-has-children > span.fancytree-title:hover, 
+.multitreequery .leafselection .fancytree-treefocus span.fancytree-focused.fancytree-has-children > span.fancytree-title {
+	border-color: transparent;
+	background: transparent;
+	color: #000;
+	cursor: default;
+}
+
+.multitreequery .fancytree-container {
+	border: 1px solid #ECECEC;
+}
+
+.multitreequery .chosen-tree-list-container {
+	background-color: #FFF;
+}
+
+.multitreequery .chosen-tree-list {
+	margin: 0;
+	font-size: 14px;
+}
+
+.multitreequery .chosen-tree-list li {
+	padding: 3px;
+}
+
+.multitreequery .chosen-tree + .no-chosen-trees {
+	display: none;
+}

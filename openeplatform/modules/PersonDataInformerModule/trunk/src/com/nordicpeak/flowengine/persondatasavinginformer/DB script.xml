@@ -1,0 +1,423 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`invoicePaymentEventDescription` VARCHAR(255) NULL DEFAULT NULL,
+					PRIMARY KEY (`flowFamilyID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings`
+					ADD COLUMN `usesPersonData` TINYINT(1) UNSIGNED NOT NULL AFTER `flowFamilyID`,
+					CHANGE COLUMN `invoicePaymentEventDescription` `accountable` VARCHAR(255) NOT NULL AFTER `usesPersonData`,
+					ADD COLUMN `yearsSaved` TINYINT UNSIGNED NOT NULL AFTER `accountable`,
+					ADD COLUMN `reason` TEXT NULL AFTER `yearsSaved`,
+					ADD COLUMN `extraInformation` TEXT NULL DEFAULT NULL AFTER `reason`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings`
+					CHANGE COLUMN `accountable` `accountable` VARCHAR(255) NULL AFTER `usesPersonData`,
+					CHANGE COLUMN `yearsSaved` `yearsSaved` TINYINT(3) UNSIGNED NULL AFTER `accountable`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_data_alternatives` (
+					`alternativeID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`alternativeID`)
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_reason_alternatives` (
+					`alternativeID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`alternativeID`)
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings_data_alternatives` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`alternativeID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `alternativeID`),
+					INDEX `FK_person_data_informer_settings_data_alternatives_2` (`alternativeID`),
+					CONSTRAINT `FK_person_data_informer_settings_data_alternatives_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `person_data_informer_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE,
+					CONSTRAINT `FK_person_data_informer_settings_data_alternatives_2` FOREIGN KEY (`alternativeID`) REFERENCES `person_data_informer_data_alternatives` (`alternativeID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings_reason_alternatives` (
+					`flowFamilyID` INT(10) UNSIGNED NOT NULL,
+					`alternativeID` INT(10) UNSIGNED NOT NULL,
+					PRIMARY KEY (`flowFamilyID`, `alternativeID`),
+					INDEX `FK_person_data_informer_settings_reason_alternatives_2` (`alternativeID`),
+					CONSTRAINT `FK_person_data_informer_settings_reason_alternatives_1` FOREIGN KEY (`flowFamilyID`) REFERENCES `person_data_informer_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE,
+					CONSTRAINT `FK_person_data_informer_settings_reason_alternatives_2` FOREIGN KEY (`alternativeID`) REFERENCES `person_data_informer_reason_alternatives` (`alternativeID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_data_alternatives` (`alternativeID`, `name`) VALUES
+					(1, 'Namn'),
+					(2, 'Adress'),
+					(3, 'Fastighesbeteckning'),
+					(4, 'E-post'),
+					(5, 'Personnummer'),
+					(6, 'Lön på personnivå'),
+					(7, 'Telefonnummer'),
+					(8, 'Mobilnummer'),
+					(9, 'IP-nummer'),
+					(10, 'Kundnummer'),
+					(11, 'GPS-koordinat kopplat till en individ');
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_reason_alternatives` (`alternativeID`, `name`) VALUES
+					(1, '1. Den registrerade har lämnat sitt samtycke'),
+					(2, '2. Avtal ska kunna fullgöras med den registrerade'),
+					(3, '3. Den personuppgiftsansvarige ska kunna fullgöra en rättslig skyldighet'),
+					(4, '4. Vitala intressen för den registrerade ska skyddas'),
+					(5, '5. En arbetsuppgift av allmänt intresse ska kunna utföras'),
+					(6, '6. En arbetsuppgift i samband med myndighetsutövning ska kunna utföras'),
+					(7, '7. Berättigat intresse för behandlingen väger tyngre än den registrerades intresse av skydd mot kränkning av den personliga integriteten.');
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_queries` (
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					`title` VARCHAR(255) NULL DEFAULT NULL,
+					`description` TEXT NULL,
+					`helpText` TEXT NULL,
+					PRIMARY KEY (`queryID`)
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_query_instances` (
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`queryID` INT(10) UNSIGNED NOT NULL,
+					`accepted` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0',
+					PRIMARY KEY (`queryInstanceID`),
+					INDEX `FK_person_data_informer_query_instances_1` (`queryID`),
+					CONSTRAINT `FK_person_data_informer_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `person_data_informer_queries` (`queryID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_reason_alternatives` (`alternativeID`, `name`) VALUES
+					(1, 'Den registrerade har lämnat sitt samtycke'),
+					(2, 'Avtal ska kunna fullgöras med den registrerade'),
+					(3, 'Den personuppgiftsansvarige ska kunna fullgöra en rättslig skyldighet'),
+					(4, 'Vitala intressen för den registrerade ska skyddas'),
+					(5, 'En arbetsuppgift av allmänt intresse ska kunna utföras'),
+					(6, 'En arbetsuppgift i samband med myndighetsutövning ska kunna utföras'),
+					(7, 'Berättigat intresse för behandlingen väger tyngre än den registrerades intresse av skydd mot kränkning av den personliga integriteten.')
+					ON DUPLICATE KEY UPDATE alternativeID = VALUES(alternativeID), name = VALUES(name);
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_data_alternatives` SET name ='Fastighetsbeteckning' WHERE alternativeID = 3;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `complaintDescription` TEXT NULL AFTER `extraInformation`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `extraInformationStorage` TEXT NULL AFTER `complaintDescription`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_settings_storage` (
+					`storageSettingID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`flowFamilyID` INT UNSIGNED NOT NULL,
+					`period` INT UNSIGNED NULL,
+					`type` VARCHAR(10) NOT NULL,
+					`description` VARCHAR(255) NULL,
+					PRIMARY KEY (`storageSettingID`),
+					CONSTRAINT `FK__person_data_informer_settings` FOREIGN KEY (`flowFamilyID`) REFERENCES `person_data_informer_settings` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, yearsSaved, 'YEAR', null FROM `person_data_informer_settings` WHERE yearsSaved IS NOT NULL
+ 			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_settings_storage`(flowFamilyID, period, type, description) SELECT flowFamilyID, null, 'INFINITY', null FROM `person_data_informer_settings` WHERE yearsSaved IS NULL
+ 			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+ 				ALTER TABLE `person_data_informer_settings` DROP COLUMN `accountable`, DROP COLUMN `yearsSaved`;
+ 			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_data_alternatives` SET name = 'E-postadress' WHERE name = 'E-post';
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_standardtexts` (
+					`textID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+					`name` VARCHAR(50) NOT NULL,
+					`value` TEXT NOT NULL,
+					PRIMARY KEY (`textID`),
+					UNIQUE INDEX `name` (`name`)
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) (SELECT 'defaultComplaintDescription', value FROM `openhierarchy_foreground_module_settings` WHERE id = 'defaultComplaintDescription' AND moduleID = (SELECT moduleID FROM `openhierarchy_foreground_modules` WHERE classname = 'com.nordicpeak.flowengine.persondatasavinginformer.PersonDataInformerModule'));
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultComplaintDescription', '<p>Klagom&aring;l r&ouml;rande personuppgiftshanteringen i tj&auml;nsten kan l&auml;mnas till tillsynsmyndigheten, Datainspektionen. Bes&ouml;k Datainspektionens hemsida (<a href="http://www.datainspektionen.se/om-oss/arbetssatt/klagomal/">http://www.datainspektionen.se/om-oss/arbetssatt/klagomal</a>) f&ouml;r mer information om hur du l&auml;mnar klagom&aring;l.</p>') ON DUPLICATE KEY UPDATE textID = textID;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultReasonDescription', '<p>Vid handl&auml;ggningen av ditt &auml;rende registreras och behandlas de personuppgifter som framg&aring;r av informationen ovan. Behandlingen sker i det &auml;rendehanteringssystem som verksamheten anv&auml;nder f&ouml;r handl&auml;ggning av ditt &auml;rende.</p>');
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultStorageDescription', '<p>L&auml;s mer om behandling av personuppgifter under Personuppgifter i menyn ovan.</p>');
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="13">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_data_alternatives` ADD COLUMN `autoSelect` TINYINT UNSIGNED NOT NULL AFTER `name`;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` DROP COLUMN `usesPersonData`;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `dataRecipient` TEXT NULL AFTER `extraInformationStorage`;
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_standardtexts` CHANGE COLUMN `value` `value` TEXT NULL AFTER `name`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="14">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultExtraInformationDescription', null);
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="15">
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_standardtexts` SET value = REPLACE(value, '<strong>L&auml;mna klagom&aring;l p&aring; personuppgiftshantering</strong><br />', '') WHERE name = 'defaultComplaintDescription' AND value LIKE '<p><strong>L&auml;mna klagom&aring;l p&aring; personuppgiftshantering</strong><br />%';
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="16">
+		<Query>
+			<![CDATA[
+				UPDATE person_data_informer_standardtexts SET value = REPLACE(value, 'http://www.datainspektionen.se/om-oss/arbetssatt/klagomal', 'https://www.datainspektionen.se/vagledningar/for-dig-som-privatperson/klagomal-och-tips');
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE person_data_informer_settings SET complaintDescription = REPLACE(complaintDescription, 'http://www.datainspektionen.se/om-oss/arbetssatt/klagomal', 'https://www.datainspektionen.se/vagledningar/for-dig-som-privatperson/klagomal-och-tips');
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="17">
+		<Query>
+			<![CDATA[
+				INSERT INTO `person_data_informer_standardtexts`(name, value) VALUES ('defaultConfirmationText', 'Jag har tagit del av ovanstående information och godkänner behandlingen av personuppgifter');
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD COLUMN `confirmationText` VARCHAR(1024) NULL AFTER `extraInformationStorage`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_standardtexts` ADD COLUMN `type` VARCHAR(20) NOT NULL AFTER `value`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_standardtexts` SET type = 'EDITOR' WHERE name != 'defaultConfirmationText';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE `person_data_informer_standardtexts` SET type = 'TEXTFIELD' WHERE name = 'defaultConfirmationText';
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="18">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_query_instances`
+					ADD COLUMN `reason` TEXT NULL DEFAULT NULL AFTER `accepted`,
+					ADD COLUMN `extraInformation` TEXT NULL DEFAULT NULL AFTER `reason`,
+					ADD COLUMN `complaintDescription` TEXT NULL DEFAULT NULL AFTER `extraInformation`,
+					ADD COLUMN `extraInformationStorage` TEXT NULL DEFAULT NULL AFTER `complaintDescription`,
+					ADD COLUMN `confirmationText` TEXT(1024) NULL DEFAULT NULL AFTER `extraInformationStorage`,
+					ADD COLUMN `dataRecipient` TEXT NULL DEFAULT NULL AFTER `confirmationText`,
+					ADD COLUMN `ownerName` TEXT NULL DEFAULT NULL AFTER `dataRecipient`,
+					ADD COLUMN `ownerEmail` TEXT NULL DEFAULT NULL AFTER `ownerName`;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_query_instance_settings_storage` (
+					`settingStorageID` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`period` INT(10) UNSIGNED NULL DEFAULT NULL,
+					`type` VARCHAR(10) NOT NULL COLLATE 'latin1_swedish_ci',
+					`description` VARCHAR(255) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
+					PRIMARY KEY (`settingStorageID`) USING BTREE,
+					INDEX `queryInstanceID` (`queryInstanceID`) USING BTREE,
+					CONSTRAINT `FK_person_data_informer_query_instances_settings_instances` FOREIGN KEY (`queryInstanceID`) REFERENCES `person_data_informer_query_instances` (`queryInstanceID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci'
+				ENGINE=InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="19">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_query_instance_data_alternatives` (
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`alternativeName` VARCHAR(255) NOT NULL COLLATE 'latin1_swedish_ci',
+					PRIMARY KEY (`alternativeName`, `queryInstanceID`) USING BTREE,
+					INDEX `FK__person_data_informer_query_instances` (`queryInstanceID`) USING BTREE,
+					CONSTRAINT `FK__person_data_informer_query_instances` FOREIGN KEY (`queryInstanceID`) REFERENCES `person_data_informer_query_instances` (`queryInstanceID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `person_data_informer_query_instance_reason_alternatives` (
+					`queryInstanceID` INT(10) UNSIGNED NOT NULL,
+					`alternativeName` VARCHAR(255) NOT NULL,
+					PRIMARY KEY (`queryInstanceID`, `alternativeName`),
+					CONSTRAINT `FK__person_data_informer_query_instances_reason_alternatives` FOREIGN KEY (`queryInstanceID`) REFERENCES `person_data_informer_query_instances` (`queryInstanceID`) ON UPDATE CASCADE ON DELETE CASCADE
+				)
+				COLLATE='latin1_swedish_ci';
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="20">
+		<Query>
+			<![CDATA[
+				DELETE FROM person_data_informer_settings WHERE flowFamilyID NOT IN (SELECT flowFamilyID FROM flowengine_flow_families);
+			]]>
+		</Query>
+		
+		<Query>
+			<![CDATA[
+				ALTER TABLE `person_data_informer_settings` ADD CONSTRAINT `FK_person_data_informer_settings_flowengine_flow_families` FOREIGN KEY (`flowFamilyID`) REFERENCES `flowengine_flow_families` (`flowFamilyID`) ON UPDATE CASCADE ON DELETE CASCADE;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

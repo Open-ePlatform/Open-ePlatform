@@ -1,0 +1,74 @@
+.flex-wrap {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.contact-detail-field {
+	margin-bottom: 20px;
+}
+
+.split-fields {
+	display: flex;
+	gap: 30px;
+	align-items: flex-start;
+}
+
+.align-items-flex-end {
+	align-items: flex-end;
+}
+
+.split-fields div {
+	flex: 1;
+}
+
+.contact-detail-field input[type=text] {
+	width: 100%;
+}
+
+.no-sections.checkbox-setting {
+	border-right: none;
+    border-bottom: none;
+    box-shadow: none;
+}
+
+#UserProfileModule .input-error {
+	float: none;
+	vertical-align: baseline;
+}
+
+#UserProfileModule .input-error .error {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    max-width: 336px;
+}
+
+#UserProfileModule .input-error .error i {
+    margin: unset;
+    margin-right: 5px;
+    display: inline-block;
+    position: relative;
+    right: 0;
+    bottom: 0;
+    width: unset;
+    height: unset;
+}
+
+@media screen and (max-width: 676px) {
+	.split-fields {
+		flex-direction: column;
+		align-items: start;
+		gap: 0;
+	}
+	
+	.flex-wrap {
+		max-width: 336px;
+	}
+}
+
+@media screen and (max-width: 1204px) {
+	.input-error input, .input-error input[type=text] {
+	    padding: 12px 16px 12px 12px;
+	    width: 100%;
+	}
+}
