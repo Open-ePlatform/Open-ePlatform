@@ -6,22 +6,22 @@ on:
   schedule:
   # At 01:00 every night (Please note: GitHub actions schedule is in UTC time).
     - cron: "0 1 * * *"
-    
+
 jobs:
   mirror:
     runs-on: ubuntu-latest
     container:
-      image: ubuntu:20.04  # äldre Ubuntu med kompatibel Git/git-svn
+      image: ubuntu:20.04  # kompatibel med git-svn
 
     steps:
-      # Installera Git, SVN och git-svn
+      # Installera git, svn och git-svn
       - name: Install dependencies
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y git subversion git-svn perl
 
-      # Skapa katalog för SVN-kloning
-      - name: Create mirror directory
+      # Skapa katalog för SVN-klonen
+      - name: Setup mirror directory
         run: mkdir svn-mirror
 
       # Klona SVN-repo med standard layout
@@ -29,17 +29,38 @@ jobs:
         run: |
           git svn clone --stdlayout --no-metadata --prefix=svn/ svn://svn.nordicpeak.com/openeplatform svn-mirror
 
+      # Byt till katalogen
+      - name: Map trunk to main
+        run: |
+          cd svn-mirror
+          # Skapa main från svn/trunk
+          git checkout -b main svn/trunk
+
+      # Lägg till GitHub som remote med token för autentisering
       - name: Add GitHub remote
         run: |
           cd svn-mirror
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-    
-      # Push alla grenar och taggar till GitHub
-      - name: Push to GitHub
+
+      # Push trunk som main
+      - name: Push main branch
         run: |
           cd svn-mirror
-          git push --all origin
-          git push --tags origin
+          git push --set-upstream origin main
+
+      # Push alla övriga SVN brancher och taggar
+      - name: Push other branches and tags
+        run: |
+          cd svn-mirror
+          for branch in $(git for-each-ref --format='%(refname:short)' refs/remotes/svn/branches); do
+            git checkout -b "${branch#svn/branches/}" "$branch"
+            git push --set-upstream origin "${branch#svn/branches/}"
+          done
+          # Push tags
+          git for-each-ref --format='%(refname:short)' refs/remotes/svn/tags | while read tag; do
+            git tag "${tag#svn/tags/}" "$tag"
+            git push origin "${tag#svn/tags/}"
+          done
           
   # Prevents this action from being disabled due to repository inactivity. See: https://docs.github.com/en/actions/administering-github-actions/usage-limits-billing-and-administration#disabling-and-enabling-workflows
   workflow-keepalive:
