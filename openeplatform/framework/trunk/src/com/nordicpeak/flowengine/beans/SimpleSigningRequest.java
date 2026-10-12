@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import se.unlogic.standardutils.hash.HashAlgorithms;
+import se.unlogic.standardutils.hash.HashAlgorithm;
 import se.unlogic.standardutils.hash.HashUtils;
 import se.unlogic.standardutils.string.StringUtils;
 
@@ -20,7 +20,7 @@ public class SimpleSigningRequest implements GenericSigningRequest {
 
 	public SimpleSigningRequest(String description, String dataToSign, String signingFormURL, String processSigningURL) {
 		
-		this(description, dataToSign, HashAlgorithms.SHA1, signingFormURL, processSigningURL);
+		this(description, dataToSign, HashAlgorithm.SHA1.getValue(), signingFormURL, processSigningURL);
 	}
 	
 	public SimpleSigningRequest(String description, String dataToSign, String hashAlgorithm, String signingFormURL, String processSigningURL) {
@@ -35,7 +35,7 @@ public class SimpleSigningRequest implements GenericSigningRequest {
 	
 	public SimpleSigningRequest(String description, File fileToSign, String signingFormURL, String processSigningURL) throws IOException {
 		
-		this(description, fileToSign, HashAlgorithms.SHA1, signingFormURL, processSigningURL);
+		this(description, fileToSign, HashAlgorithm.SHA1.getValue(), signingFormURL, processSigningURL);
 	}
 	
 	public SimpleSigningRequest(String description, File fileToSign, String hashAlgorithm, String signingFormURL, String processSigningURL) throws IOException {

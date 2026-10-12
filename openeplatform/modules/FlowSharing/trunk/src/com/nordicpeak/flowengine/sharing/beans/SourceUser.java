@@ -55,6 +55,12 @@ public class SourceUser extends User {
 	}
 
 	@Override
+	public Timestamp getDisabledDate() {
+
+		return null;
+	}
+
+	@Override
 	public String getLastname() {
 
 		return "";

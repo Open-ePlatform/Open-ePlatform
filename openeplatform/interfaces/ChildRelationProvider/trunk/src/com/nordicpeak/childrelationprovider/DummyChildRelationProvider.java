@@ -45,11 +45,11 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 	private boolean secret2;
 	
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name = "1 - ensam vårdnad", description = "")
+	@CheckboxSettingDescriptor(name = "1 - ensam vÃ¥rdnad", description = "")
 	private boolean ensam1;
 	
 	@ModuleSetting
-	@CheckboxSettingDescriptor(name = "1 - delad vårdnad utan personnr", description = "")
+	@CheckboxSettingDescriptor(name = "1 - delad vÃ¥rdnad utan personnr", description = "")
 	private boolean noID1;
 	
 	@Override
@@ -84,7 +84,7 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 				
 				if (ensam1) {
 
-					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier) }));
+					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("fÃ¶rÃ¤lder", "1", citizenIdentifier) }));
 
 				} else if (noID1) {
 
@@ -92,11 +92,11 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 						throw new IncompleteDataException("Guardian without person number");
 					}
 
-					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", null) }));
+					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("fÃ¶rÃ¤lder", "1", citizenIdentifier), new SimpleGuardian("fÃ¶rÃ¤lder", "2", null) }));
 
 				} else {
 
-					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
+					child1.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("fÃ¶rÃ¤lder", "1", citizenIdentifier), new SimpleGuardian("fÃ¶rÃ¤lder", "2", "191234567890") }));
 				}
 			}
 			
@@ -108,7 +108,7 @@ public class DummyChildRelationProvider extends AnnotatedForegroundModule implem
 			SimpleChild child2 = new SimpleChild("lisa", "kula", childID2, "gatan", "12345", "orten", "4321");
 			
 			if (withGuardians) {
-				child2.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("förälder", "1", citizenIdentifier), new SimpleGuardian("förälder", "2", "191234567890") }));
+				child2.setGuardians(Arrays.asList(new Guardian[] { new SimpleGuardian("fÃ¶rÃ¤lder", "1", citizenIdentifier), new SimpleGuardian("fÃ¶rÃ¤lder", "2", "191234567890") }));
 			}
 			
 			children.put(child2.getCitizenIdentifier(), child2);

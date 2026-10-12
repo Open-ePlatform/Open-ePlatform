@@ -1156,12 +1156,12 @@ public class ChildQueryProviderModule extends BaseQueryProviderModule<ChildQuery
 			calendar.set(Calendar.MILLISECOND, 0);
 			calendar.add(Calendar.YEAR, -i);
 
-			StoredChild child = new StoredChild("Testbarn", i + "år", CITIZEN_ID_DATE_FORMATTER.format(calendar.getTime()) + "TEST");
+			StoredChild child = new StoredChild("Testbarn", i + "Ã¥r", CITIZEN_ID_DATE_FORMATTER.format(calendar.getTime()) + "TEST");
 			child.setTestChild(true);
 			child.setMunicipalityCode("4321");
 			child.setAddress("Testgatan 1");
 			child.setZipcode("123 45");
-			child.setPostalAddress("Testköping");
+			child.setPostalAddress("TestkÃ¶ping");
 			child.setGuardians(CollectionUtils.getList(guardian, guardian2));
 			
 

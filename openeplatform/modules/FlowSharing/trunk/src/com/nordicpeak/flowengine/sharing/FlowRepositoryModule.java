@@ -49,7 +49,7 @@ import se.unlogic.standardutils.dao.QueryParameterFactory;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
-import se.unlogic.standardutils.hash.HashAlgorithms;
+import se.unlogic.standardutils.hash.HashAlgorithm;
 import se.unlogic.standardutils.hash.HashUtils;
 import se.unlogic.standardutils.io.BinarySizes;
 import se.unlogic.standardutils.string.StringUtils;
@@ -97,7 +97,7 @@ public class FlowRepositoryModule extends AnnotatedRESTModule implements CRUDCal
 	
 	@ModuleSetting
 	@DropDownSettingDescriptor(name = "Password algorithm", description = "The algorithm used for password hashing", required = true, values = { "MD5", "SHA-256", "SHA-384", "SHA-512" }, valueDescriptions = { "MD5", "SHA-256", "SHA-384", "SHA-512" })
-	protected String passwordAlgorithm = HashAlgorithms.SHA256;
+	protected String passwordAlgorithm = HashAlgorithm.SHA256.getValue();
 
 	@ModuleSetting
 	@TextFieldSettingDescriptor(name = "Login lockout time", description = "Time in seconds that the user will be locked out after failed attempts")

@@ -1,0 +1,53 @@
+rootProject.name = 'open-eplatform'
+
+/*
+ * The repository is a mirror of the upstream Subversion layout, so every source
+ * project sits in a `trunk` directory below a category directory. Gradle would
+ * derive the project name from that directory, so each project is included by
+ * its Eclipse project name and pointed at its own directory instead.
+ *
+ * Not included:
+ *   - openeplatform/designs and openeplatform/mapclient-riges, which contain
+ *     WebContent/db resources only and no Java sources
+ *   - the `branches` copies, which are stale snapshots of the trunk projects
+ */
+def projects = [
+	// Core
+	'FlowEngine'                    : 'openeplatform/framework/trunk',
+
+	// Interfaces
+	'ChildRelationProvider'         : 'openeplatform/interfaces/ChildRelationProvider/trunk',
+	'ListUserProvider'              : 'openeplatform/interfaces/ListUserProvider/trunk',
+	'TreeDataProvider'              : 'openeplatform/interfaces/TreeDataProvider/trunk',
+
+	// Modules
+	'FlowApprovalModule'            : 'openeplatform/modules/FlowApprovalModule/trunk',
+	'FlowEngineIntegrationCallback' : 'openeplatform/modules/FlowEngineIntegrationCallback/trunk',
+	'FlowInfoModule'                : 'openeplatform/modules/FlowInfoModule/trunk',
+	'FlowInstanceAttachments'       : 'openeplatform/modules/FlowInstanceAttachments/trunk',
+	'FlowInstancePDFGenerator'      : 'openeplatform/modules/FlowInstancePDFGenerator/trunk',
+	'FlowInstanceStatisticsAPI'     : 'openeplatform/modules/FlowInstanceStatisticsAPI/trunk',
+	'FlowSharing'                   : 'openeplatform/modules/FlowSharing/trunk',
+	'MinimalUserSAMLAdapter'        : 'openeplatform/modules/MinimalUserSAMLAdapter/trunk',
+	'PBLKnowledgeBank'              : 'openeplatform/modules/PBLKnowledgeBank/trunk',
+	'PersonDataInformerModule'      : 'openeplatform/modules/PersonDataInformerModule/trunk',
+	'StandardFlowNotificationHandler': 'openeplatform/modules/StandardFlowNotificationHandler/trunk',
+
+	// Queries
+	'BaseMapQuery'                  : 'openeplatform/queries/BaseMapQuery/trunk',
+	'ChildQueryProvider'            : 'openeplatform/queries/ChildQueryProvider/trunk',
+	'FileInfoQueryProvider'         : 'openeplatform/queries/FileInfoQueryProvider/trunk',
+	'GeneralMapQuery'               : 'openeplatform/queries/GeneralMapQuery/trunk',
+	'MultiGeometryMapQuery'         : 'openeplatform/queries/MultiGeometryMapQuery/trunk',
+	'MultiTreeQueryProvider'        : 'openeplatform/queries/MultiTreeQueryProvider/trunk',
+	'PUDMapQuery'                   : 'openeplatform/queries/PUDMapQuery/trunk',
+	'PUDQuery'                      : 'openeplatform/queries/PUDQuery/trunk',
+	'SinglePolygonMapQuery'         : 'openeplatform/queries/SinglePolygonMapQuery/trunk',
+	'StopQueryProviderModule'       : 'openeplatform/queries/StopQueryProviderModule/trunk',
+	'TreeQueryProvider'             : 'openeplatform/queries/TreeQueryProvider/trunk',
+]
+
+projects.each { name, path ->
+	include name
+	project(":$name").projectDir = file(path)
+}

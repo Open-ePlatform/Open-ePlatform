@@ -4,5 +4,33 @@
 # Log file
 *.log
 
-# Subversion
-.svn/
+# Gradle
+.gradle/
+build/
+
+# IDE project metadata. The build is defined by build.gradle and
+# settings.gradle alone, everything below belongs to whoever checked the
+# repository out and not to the source.
+.classpath
+.project
+.settings/
+.externalToolBuilders/
+.factorypath
+.apt_generated/
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.fleet/
+nbproject/
+.nb-gradle/
+
+# Eclipse/JDT output
+bin/
+
+# Jars supplied locally, see libs/README.md
+libs/*.jar
+
+# Local, machine specific build logic, applied by build.gradle if present
+local.gradle

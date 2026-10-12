@@ -53,7 +53,7 @@ import se.unlogic.standardutils.dao.LowLevelQuery;
 import se.unlogic.standardutils.db.tableversionhandler.TableVersionHandler;
 import se.unlogic.standardutils.db.tableversionhandler.UpgradeResult;
 import se.unlogic.standardutils.db.tableversionhandler.XMLDBScriptProvider;
-import se.unlogic.standardutils.hash.HashAlgorithms;
+import se.unlogic.standardutils.hash.HashAlgorithm;
 import se.unlogic.standardutils.hash.HashUtils;
 import se.unlogic.standardutils.populators.StringPopulator;
 import se.unlogic.standardutils.string.StringUtils;
@@ -767,7 +767,7 @@ public class FlowApprovalUserModule extends AnnotatedRESTModule implements UserM
 
 	private SimpleSigningRequest getSigningRequest(String dataToSign, FlowApprovalActivityProgress activityProgress, FlowInstance flowInstance, User signer, URIParser uriParser) throws IOException {
 
-		String dataHash = HashUtils.hash(dataToSign, HashAlgorithms.SHA1);
+		String dataHash = HashUtils.hash(dataToSign, HashAlgorithm.SHA1);
 
 		String description = signingMessage.replace("$activityProgress.ID", activityProgress.getActivityProgressID() + "");
 		description = description.replace("$activity.name", activityProgress.getActivity().getName());

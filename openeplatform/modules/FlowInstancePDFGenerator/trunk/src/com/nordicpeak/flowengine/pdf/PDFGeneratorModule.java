@@ -150,7 +150,7 @@ public class PDFGeneratorModule extends AnnotatedForegroundModule implements Flo
 	private List<String> customStyleSheets;
 
 	@ModuleSetting
-	@TextFieldSettingDescriptor(name = "Default logotype", description = "The path to the default logotype. The path can be in both filesystem or classpath. Use classpath:// prefix resouces in classpath and file:/ prefix för files in filesystem.", required = true)
+	@TextFieldSettingDescriptor(name = "Default logotype", description = "The path to the default logotype. The path can be in both filesystem or classpath. Use classpath:// prefix resouces in classpath and file:/ prefix fÃ¶r files in filesystem.", required = true)
 	protected String defaultLogotype = "classpath://com/nordicpeak/flowengine/pdf/staticcontent/pics/logo.png";
 
 	@ModuleSetting(allowsNull = true)

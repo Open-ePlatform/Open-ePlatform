@@ -36,7 +36,7 @@ public class ValidateLMTestClient {
 			
 		}
 		
-		String addrStr = "Sundsvall Skanörvägen 12";
+		String addrStr = "Sundsvall SkanÃ¶rvÃ¤gen 12";
 		
 		IAddress address = searchLM.validateAddress(addrStr, "sundsvall");
 		

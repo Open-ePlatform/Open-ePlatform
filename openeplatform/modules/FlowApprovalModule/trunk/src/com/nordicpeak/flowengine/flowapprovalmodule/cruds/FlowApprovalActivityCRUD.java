@@ -150,7 +150,7 @@ public class FlowApprovalActivityCRUD extends ModularCRUD<FlowApprovalActivity, 
 		List<Integer> assignableUserIDs = ValidationUtils.validateParameters("assignable-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
 		List<Integer> responsibleUserIDs = ValidationUtils.validateParameters("responsible-user", req, false, IntegerPopulator.getPopulator(), validationErrors);
 		
-		//TODO Om ansvarig anv‰ndare eller grupp inte sˆks via attribut sÂ ska inte handl‰ggare fÂ byta ansvarig. S‰tt alltsÂ den till false i det fallet.
+		//TODO Om ansvarig anv√§ndare eller grupp inte s√∂ks via attribut s√• ska inte handl√§ggare f√• byta ansvarig. S√§tt allts√• den till false i det fallet.
 		
 		List<User> assignableUsers = null;
 		List<User> responsibleUsers = null;

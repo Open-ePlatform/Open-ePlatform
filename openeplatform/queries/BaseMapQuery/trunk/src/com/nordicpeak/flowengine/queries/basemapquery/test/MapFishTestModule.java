@@ -24,7 +24,7 @@ import se.unlogic.hierarchy.core.interfaces.SectionInterface;
 import se.unlogic.hierarchy.core.interfaces.listeners.SystemStartupListener;
 import se.unlogic.hierarchy.core.interfaces.modules.descriptors.ForegroundModuleDescriptor;
 import se.unlogic.hierarchy.foregroundmodules.AnnotatedForegroundModule;
-import se.unlogic.standardutils.hash.HashAlgorithms;
+import se.unlogic.standardutils.hash.HashAlgorithm;
 import se.unlogic.standardutils.hash.HashUtils;
 import se.unlogic.standardutils.io.CloseUtils;
 import se.unlogic.standardutils.string.StringUtils;
@@ -96,7 +96,7 @@ public class MapFishTestModule extends AnnotatedForegroundModule implements Runn
 		
 		String response = new String(mapImage);
 		
-		String hash = HashUtils.hash(response, HashAlgorithms.SHA1);
+		String hash = HashUtils.hash(response, HashAlgorithm.SHA1);
 		
 		return new SimpleForegroundModuleResponse(hash, this.getDefaultBreadcrumb());
 	
@@ -129,7 +129,7 @@ public class MapFishTestModule extends AnnotatedForegroundModule implements Runn
 			
 			if(expectedHashedResponse != null) {
 				
-				String hash = HashUtils.hash(new String(mapImage), HashAlgorithms.SHA1);
+				String hash = HashUtils.hash(new String(mapImage), HashAlgorithm.SHA1);
 				
 				if(!hash.equals(expectedHashedResponse)) {
 					

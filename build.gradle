@@ -1,0 +1,238 @@
+/*
+ * Build for Open ePlatform.
+ *
+ * All configuration lives in this file: the subprojects are plain Eclipse
+ * projects (sources and resources mixed under a single `src` directory, no
+ * build files of their own), so they are configured from here rather than each
+ * carrying a near-identical build.gradle.
+ */
+
+plugins {
+	id 'base'
+}
+
+/*
+ * Third party libraries. Upstream keeps these as Eclipse library projects
+ * (OpenPDF, PDFBox, ...) that are checked out next to the source projects; here
+ * they are resolved from Maven Central instead.
+ *
+ * The versions are the ones of the jars in those library projects, which live
+ * in the Utils repository under `libraries` - read them off there rather than
+ * guessing, and bump them deliberately: several of the APIs used are not source
+ * compatible across major versions.
+ */
+ext.libraries = [
+	ServletAPI  : ['javax.servlet:javax.servlet-api:4.0.1'],
+	LuceneCore  : ['org.apache.lucene:lucene-core:8.7.0',
+	               'org.apache.lucene:lucene-analyzers-common:8.7.0',
+	               'org.apache.lucene:lucene-queryparser:8.7.0',
+	               'org.apache.lucene:lucene-highlighter:8.7.0',
+	               'org.apache.lucene:lucene-memory:8.7.0',
+	               'org.apache.lucene:lucene-queries:8.7.0'],
+	Tika        : ['org.apache.tika:tika-core:1.24',
+	               'org.apache.tika:tika-parsers:1.24'],
+	JTidy       : ['net.sf.jtidy:jtidy:r938'],
+	OpenPDF     : ['com.github.librepdf:openpdf:1.3.19'],
+	PDFBox      : ['org.apache.pdfbox:pdfbox:2.0.19',
+	               'org.apache.pdfbox:xmpbox:2.0.19'],
+	FlyingSaucer: ['org.xhtmlrenderer:flying-saucer-core:9.1.20',
+	               'org.xhtmlrenderer:flying-saucer-pdf-openpdf:9.1.20'],
+	JTS         : ['com.vividsolutions:jts:1.13'],
+	BouncyCastle: ['org.bouncycastle:bcprov-jdk15on:1.67',
+	               'org.bouncycastle:bcpkix-jdk15on:1.67'],
+	HttpCore    : ['org.apache.httpcomponents:httpcore:4.4.15'],
+	HttpClient  : ['org.apache.httpcomponents:httpclient:4.5.13'],
+	Flexjson    : ['net.sf.flexjson:flexjson:3.2'],
+	'JAX-WS-RI' : ['com.sun.xml.ws:jaxws-rt:2.3.5'],
+
+	// Not referenced from any .classpath: in Eclipse these come along with the
+	// OpenHierarchy projects, which are plain jars here and carry no metadata.
+	Log4j       : ['ch.qos.reload4j:reload4j:1.2.19'],
+	FileUpload  : ['commons-fileupload:commons-fileupload:1.3.3'],
+	OpenSAML    : ['org.opensaml:opensaml-core:3.4.6',
+	               'org.opensaml:opensaml-saml-api:3.4.6',
+	               'org.opensaml:opensaml-saml-impl:3.4.6'],
+]
+
+/*
+ * The log4j 1.2 API is used all over the code base. reload4j is a drop-in
+ * replacement for the abandoned log4j 1.2.17 with the same `org.apache.log4j`
+ * package, so the sources compile unchanged against a maintained artifact.
+ */
+ext.commonLibraries = ['Log4j']
+
+/*
+ * Dependencies that are part of OpenHierarchy rather than of Open ePlatform.
+ * They are not published to any public repository, so they are picked up as
+ * jars from the `libs` directory in the root of this repository (see libs/README.md).
+ */
+ext.openHierarchyDependencies = [
+	'OpenHierarchy',
+	'Cron4JUtils',
+	'SiteProfile',
+	'WSModule',
+	'SAMLLoginProvider',
+	'MinimalUser',
+	// Not the cron4j from Maven Central: the copy in the Utils repository under
+	// `libraries/cron4j` is a fork that adds, among other things, the
+	// Scheduler(String threadName) constructor this code base calls.
+	'cron4j',
+]
+
+/*
+ * Dependencies per project. This list is the only description of them: the
+ * Eclipse .classpath files they were originally transcribed from are gone, so
+ * a new dependency is added here and nowhere else.
+ * A name is resolved in this order: a project in settings.gradle, a library
+ * above, or an OpenHierarchy jar from libs/.
+ */
+ext.moduleDependencies = [
+	FlowEngine                     : ['OpenHierarchy', 'cron4j', 'LuceneCore', 'Tika', 'SiteProfile', 'JTidy', 'Cron4JUtils', 'ServletAPI', 'OpenPDF', 'FileUpload'],
+
+	ChildRelationProvider          : ['OpenHierarchy', 'ServletAPI'],
+	ListUserProvider               : ['OpenHierarchy', 'ServletAPI'],
+	TreeDataProvider               : ['OpenHierarchy', 'ServletAPI'],
+
+	FlowApprovalModule             : ['FlowEngine', 'StandardFlowNotificationHandler', 'FlyingSaucer', 'OpenPDF', 'PDFBox', 'ServletAPI', 'FileUpload'],
+	// JAX-WS reaches this project through the WSModule project in Eclipse. Here
+	// WSModule is a plain jar and carries no metadata, and javax.jws and
+	// javax.xml.ws left the JDK after 10, so the RI is named explicitly.
+	FlowEngineIntegrationCallback  : ['OpenHierarchy', 'WSModule', 'JAX-WS-RI', 'FlowEngine', 'ServletAPI'],
+	FlowInfoModule                 : ['FlowEngine', 'ServletAPI'],
+	FlowInstanceAttachments        : ['FlowEngine', 'OpenHierarchy', 'StandardFlowNotificationHandler', 'ServletAPI', 'FileUpload'],
+	FlowInstancePDFGenerator       : ['BouncyCastle', 'FlowEngine', 'FlyingSaucer', 'OpenPDF', 'PDFBox', 'ServletAPI'],
+	FlowInstanceStatisticsAPI      : ['FlowEngine', 'ServletAPI'],
+	FlowSharing                    : ['OpenHierarchy', 'FlowEngine', 'HttpCore', 'HttpClient', 'ServletAPI'],
+	MinimalUserSAMLAdapter         : ['OpenHierarchy', 'SAMLLoginProvider', 'MinimalUser', 'ServletAPI', 'OpenSAML'],
+	PBLKnowledgeBank               : ['OpenHierarchy', 'ServletAPI'],
+	PersonDataInformerModule       : ['FlowEngine', 'ServletAPI'],
+	StandardFlowNotificationHandler: ['FlowEngine', 'ServletAPI'],
+
+	BaseMapQuery                   : ['FlowEngine', 'SiteProfile', 'cron4j', 'JTS', 'ServletAPI'],
+	ChildQueryProvider             : ['FlowEngine', 'ChildRelationProvider', 'ServletAPI'],
+	FileInfoQueryProvider          : ['FlowEngine', 'ServletAPI', 'FileUpload'],
+	GeneralMapQuery                : ['FlowEngine', 'JTS', 'BaseMapQuery', 'ServletAPI'],
+	MultiGeometryMapQuery          : ['BaseMapQuery', 'FlowEngine', 'ServletAPI'],
+	MultiTreeQueryProvider         : ['FlowEngine', 'TreeDataProvider', 'ServletAPI'],
+	PUDMapQuery                    : ['FlowEngine', 'BaseMapQuery', 'Flexjson', 'ServletAPI'],
+	PUDQuery                       : ['FlowEngine', 'ServletAPI'],
+	SinglePolygonMapQuery          : ['BaseMapQuery', 'FlowEngine', 'ServletAPI'],
+	StopQueryProviderModule        : ['FlowEngine', 'ServletAPI'],
+	TreeQueryProvider              : ['FlowEngine', 'TreeDataProvider', 'ServletAPI'],
+]
+
+def projectNames = subprojects*.name as Set
+
+subprojects {
+	apply plugin: 'java-library'
+
+	group = 'com.nordicpeak.openeplatform'
+	version = rootProject.version
+
+	repositories {
+		mavenCentral()
+	}
+
+	// Eclipse layout: everything below src, with the non-Java files (XSL
+	// templates, SQL/XML scripts, properties) packaged as resources.
+	sourceSets {
+		main {
+			java {
+				srcDirs = ['src']
+			}
+			resources {
+				srcDirs = ['src']
+				exclude '**/*.java'
+			}
+		}
+		test {
+			java {
+				srcDirs = ['test']
+			}
+			resources {
+				srcDirs = ['test']
+				exclude '**/*.java'
+			}
+		}
+	}
+
+	dependencies {
+		// OpenHierarchy and any other jars that are not on Maven Central.
+		api fileTree(dir: rootProject.file('libs'), include: '*.jar')
+
+		rootProject.commonLibraries.each { library ->
+			rootProject.libraries[library].each { api it }
+		}
+	}
+
+	// Eclipse marks its project dependencies as exported, so they are declared
+	// as `api` here to keep them on the compile classpath of dependent projects.
+	rootProject.moduleDependencies.get(name, []).each { dependency ->
+		if (projectNames.contains(dependency)) {
+			dependencies.add('api', dependencies.project(":$dependency"))
+		} else if (dependency == 'ServletAPI') {
+			// Provided by the servlet container at runtime.
+			rootProject.libraries.ServletAPI.each {
+				dependencies.add('compileOnly', it)
+				dependencies.add('testImplementation', it)
+			}
+		} else if (rootProject.libraries.containsKey(dependency)) {
+			rootProject.libraries[dependency].each { dependencies.add('api', it) }
+		} else if (!rootProject.openHierarchyDependencies.contains(dependency)) {
+			throw new GradleException("Unknown dependency '$dependency' declared for project '$name'")
+		}
+	}
+
+	// `release` rather than source/target compatibility: it compiles against the
+	// API of that Java release rather than against whichever JDK happens to be
+	// running Gradle, so the build behaves the same on any of them.
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = 'UTF-8'
+		options.release = rootProject.javaVersion as Integer
+	}
+
+	tasks.withType(Test).configureEach {
+		useJUnitPlatform()
+		testLogging {
+			events = ['failed']
+			exceptionFormat = 'full'
+		}
+	}
+
+	jar {
+		manifest {
+			attributes(
+				'Implementation-Title': project.name,
+				'Implementation-Version': project.version,
+			)
+		}
+	}
+}
+
+tasks.register('openHierarchyDependencyReport') {
+	group = 'help'
+	description = 'Lists the OpenHierarchy jars each project expects to find in libs/.'
+
+	def required = moduleDependencies.collectEntries { name, dependencies ->
+		[name, dependencies.findAll { openHierarchyDependencies.contains(it) }]
+	}.findAll { name, dependencies -> dependencies }
+	def present = fileTree(dir: rootProject.file('libs'), include: '*.jar').files*.name.sort()
+
+	doLast {
+		println 'Jars found in libs/:'
+		println present ? present.collect { "  $it" }.join('\n') : '  (none)'
+		println ''
+		println 'Projects depending on OpenHierarchy code:'
+		required.sort().each { name, dependencies -> println "  $name: ${dependencies.join(', ')}" }
+	}
+}
+
+/*
+ * Anything that only makes sense on one machine - deploying the jars into a
+ * servlet container, copying them somewhere - goes in local.gradle, which is
+ * gitignored. Applied last, so the subprojects and their tasks already exist.
+ */
+def localBuild = file('local.gradle')
+if (localBuild.exists()) {
+	apply from: localBuild
+}
