@@ -1,0 +1,3 @@
+.help-box input[type="checkbox"]:checked + label::before {
+	display: none;
+}

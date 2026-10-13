@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="FlowEngine">
+        <wb-resource deploy-path="/" source-path="/src"/>
+        <dependent-module archiveName="LuceneCore.jar" deploy-path="/" handle="module:/resource/LuceneCore/LuceneCore">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Tika.jar" deploy-path="/" handle="module:/resource/Tika/Tika">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="JTidy.jar" deploy-path="/" handle="module:/resource/JTidy/JTidy">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

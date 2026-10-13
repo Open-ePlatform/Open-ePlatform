@@ -1,0 +1,1069 @@
+/* Bourbon 4.0.2
+ * http://bourbon.io
+ * Copyright 2011-2014 thoughtbot, inc.
+ * MIT License */
+/* ==========================================================================
+   Helper classes
+   ========================================================================== */
+/*
+ * Image replacement
+ */
+.ir {
+  background-color: transparent;
+  border: 0;
+  overflow: hidden;
+  /* IE 6/7 fallback */
+  *text-indent: -9999px;
+}
+
+.ir:before {
+  content: "";
+  display: block;
+  width: 0;
+  height: 150%;
+}
+
+/*
+ * Hide from both screenreaders and browsers: h5bp.com/u
+ */
+.hidden {
+  display: none;
+  visibility: hidden;
+}
+
+/*
+ * Hide only visually, but have it available for screenreaders: h5bp.com/v
+ */
+.visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+/*
+ * Extends the .visuallyhidden class to allow the element to be focusable
+ * when navigated to via the keyboard: h5bp.com/p
+ */
+.visuallyhidden.focusable:active,
+.visuallyhidden.focusable:focus {
+  clip: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  position: static;
+  width: auto;
+}
+
+/*
+ * Hide visually and from screenreaders, but maintain layout
+ */
+.invisible {
+  visibility: hidden;
+}
+
+/*
+ * Clearfix: contain floats
+ *
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    `contenteditable` attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that receive the `clearfix` class.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  /* 1 */
+  display: table;
+  /* 2 */
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+/*
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.clearfix {
+  *zoom: 1;
+}
+
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+@media only screen and (min-width: 35em) {
+  /* Style adjustments for viewports that meet the condition */
+}
+@media print, (-o-min-device-pixel-ratio: 5 / 4), (-webkit-min-device-pixel-ratio: 1.25), (min-resolution: 120dpi) {
+  /* Style adjustments for high resolution devices */
+}
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+@media print {
+  * {
+    background: transparent !important;
+    color: #000 !important;
+    /* Black prints faster: h5bp.com/s */
+    box-shadow: none !important;
+    text-shadow: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    font-size: 0.975em !important;
+    border: none !important;
+  }
+
+  .pipe {
+    margin: 0 4px !important;
+  }
+
+  h1 {
+    font-size: 2em !important;
+  }
+
+  h2.h1 {
+    font-size: 1.2em !important;
+    padding-top: 10px !important;
+  }
+
+  nav, header, .modal, .btn, .divider, .info-box, .info-box-message {
+    display: none !important;
+  }
+
+  .heading-wrapper {
+    padding-bottom: 0 !important;
+  }
+  .heading-wrapper figure {
+    display: none;
+  }
+
+  article {
+    padding: 10px !important;
+    border: 1px solid #cccccc !important;
+  }
+  article.child {
+    border-top: 0 !important;
+  }
+
+  .split, .split.odd {
+    width: 50% !important;
+  }
+
+  h1:before, h2:before {
+    display: none;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  a[href]:after {
+    content: " (" attr(href) ")";
+  }
+
+  abbr[title]:after {
+    content: " (" attr(title) ")";
+  }
+
+  /*
+   * Don't show links for images, or javascript/internal links
+   */
+  .ir a:after,
+  a[href^="javascript:"]:after,
+  a[href^="#"]:after {
+    content: "";
+  }
+
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    page-break-inside: avoid;
+  }
+
+  thead {
+    display: table-header-group;
+    /* h5bp.com/t */
+  }
+
+  tr,
+  img {
+    page-break-inside: avoid;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+
+  p,
+  h2,
+  h3 {
+    orphans: 3;
+    widows: 3;
+  }
+
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+}
+html.lt-ie9 * a:before,
+html.lt-ie9 * a:after,
+html.lt-ie9 * a span:before,
+html.lt-ie9 * a span:after {
+  text-decoration: none;
+}
+html.lt-ie9 * header {
+  padding-bottom: 0 !important;
+}
+html.lt-ie9 * header .top.container {
+  background-repeat: no-repeat;
+  height: 150px !important;
+  padding-bottom: 0 !important;
+}
+html.lt-ie9 * .input-wrapper .symbol {
+  height: 40px !important;
+}
+html.lt-ie9 * .current {
+  -ms-behavior: url("backgroundsize.min.htc") !important;
+}
+html.lt-ie9 * header nav li {
+  padding-bottom: 0 !important;
+}
+html.lt-ie9 * input[type=radio],
+html.lt-ie9 * input[type=checkbox] {
+  float: left !important;
+  display: block !important;
+  margin-top: 13px !important;
+}
+html.lt-ie9 * input[type=radio] + label:before,
+html.lt-ie9 * input[type=checkbox] + label:before {
+  display: none !important;
+}
+html.lt-ie9 * select {
+  background: #fff !important;
+}
+html.lt-ie9 * .files li.finished .progressbar .innerbar {
+  background: #fff;
+}
+html.lt-ie9 * .navigator-buttons {
+  margin-bottom: 30px;
+}
+
+html.moz .input-wrapper .symbol {
+  height: 38px !important;
+}
+
+html.svg.touch .input-wrapper .symbol {
+  height: 41px !important;
+}
+
+header {
+  background: #fff;
+  position: relative;
+  z-index: 270;
+}
+@media screen and (max-width: 767px) {
+  header .primary.active:after,
+  header #menu_3.active:after {
+    display: block;
+    position: fixed;
+    top: -10em;
+    right: -10em;
+    bottom: -10em;
+    left: -10em;
+    background: rgba(0, 0, 0, 0.45);
+    content: '';
+    z-index: -1;
+  }
+}
+header .top {
+  position: relative;
+  max-width: 1000em;
+  display: block;
+  padding-bottom: 30%;
+  background-color: #fff;
+  background-size: cover;
+  background-position: 50%;
+  overflow: hidden;
+}
+@media screen and (min-width: 500px) {
+  header .top {
+    height: 150px;
+    padding-bottom: 0;
+  }
+}
+@media screen and (max-width: 490px) {
+  header .top {
+    height: 85px;
+    padding-bottom: 0;
+  }
+}
+header .top .inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  height: 100%;
+  max-height: 150px;
+}
+header .top .inner figure {
+  display: inline-block;
+  vertical-align: bottom;
+  padding-left: 5%;
+  height: 100%;
+  max-height: 150px;
+  line-height: 150px;
+}
+@media screen and (max-width: 490px) {
+  header .top .inner figure {
+    line-height: 85px;
+  }
+  header .top .inner figure img {
+    max-height: 51px;
+  }
+}
+header .top .inner figure img {
+  display: inline;
+  vertical-align: middle;
+  max-height: 90px;
+}
+header nav {
+  background: #424242;
+  position: relative;
+  line-height: 1.5;
+}
+header nav #toggle-primary {
+  display: none;
+}
+header nav a {
+  text-decoration: none;
+}
+header nav a:hover {
+  text-decoration: none;
+}
+header nav ul {
+  float: left;
+  margin: 0;
+  padding: 0 0 0 10px;
+}
+header nav ul:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header nav ul.right {
+  float: right;
+  padding: 0;
+}
+header nav ul.right li {
+  padding: 0 0 1px 0;
+  margin-right: 2px;
+  position: relative;
+}
+header nav ul.right li a {
+  padding: 15px 11px 10px;
+}
+header nav ul.right li a i {
+  color: #f7f7f7;
+  text-shadow: none;
+}
+header nav ul.right li a .count {
+  position: absolute;
+  top: 19px;
+  right: 17px;
+  background: #c73434;
+  width: 14px;
+  height: 13px;
+  text-shadow: none;
+  text-align: center;
+  font-size: 10px;
+}
+header nav ul.right li .marker {
+  bottom: 4px;
+  *bottom: -1px;
+}
+header nav ul.right li .notification-menu {
+  display: none;
+  top: 56px;
+  right: -34px;
+  position: absolute;
+  background: #ffffff;
+  width: 356px;
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+header nav ul.right li .notification-menu .heading-wrapper {
+  font-size: 12px;
+  padding: 6px 11px;
+  border-bottom: 1px solid #e7e7e7;
+}
+header nav ul.right li .notification-menu .heading-wrapper h4 {
+  float: left;
+  margin: 0;
+}
+header nav ul.right li .notification-menu .heading-wrapper a {
+  float: right;
+  font-size: 12px;
+  color: #424242;
+  font-weight: 600;
+  text-shadow: none;
+  padding: 0;
+}
+header nav ul.right li .notification-menu .heading-wrapper a:hover {
+  color: #2969bf;
+  background: none;
+}
+header nav ul.right li .notification-menu article {
+  border-bottom: 1px solid #e7e7e7;
+}
+header nav ul.right li .notification-menu article:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header nav ul.right li .notification-menu article a {
+  padding: 0;
+}
+header nav ul.right li .notification-menu article .inner {
+  padding: 16px 21px;
+}
+header nav ul.right li .notification-menu article .inner h3 {
+  padding-bottom: 2px;
+}
+header nav ul.right li .notification-menu article .inner .author {
+  display: block;
+  font-size: 12px;
+  padding-top: 6px;
+}
+header nav ul.right li .notification-menu article .inner .author i {
+  display: inline;
+  font-weight: normal;
+  margin-right: 7px;
+  color: #cacaca;
+}
+header nav ul.right li .notification-menu article:hover {
+  background: #fafcff;
+}
+header nav ul.right li .notification-menu article.unread {
+  background: #f3f8ff;
+}
+header nav ul.right li .notification-menu article.unread .bullet {
+  display: block;
+  float: none;
+  height: 6px;
+  padding: 6px 10px 0 0;
+  text-align: right;
+  font-size: 6px;
+}
+header nav ul.right li .notification-menu article.unread .bullet i {
+  float: right;
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 6px;
+  background: #2969bf;
+}
+header nav ul.right li .notification-menu article.unread .inner {
+  padding: 0px 21px 16px;
+}
+header nav ul.right li .notification-menu article.unread .inner .author i {
+  display: inline;
+  font-weight: normal;
+  margin-right: 7px;
+  color: #2969bf;
+}
+header nav ul.right li .notification-menu article.unread:hover {
+  background: #deecff;
+}
+header nav ul.right li .notification-menu a {
+  font-size: 14px;
+  text-shadow: none;
+  color: #424242;
+  font-weight: normal;
+  padding: 0;
+  margin: 0;
+}
+header nav ul.right li .notification-menu a:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header nav ul.right li .notification-menu .bordered-link {
+  display: block;
+  border-bottom: 4px solid #6c6c6c;
+  padding: 22px 0;
+  font-size: 14px;
+  text-align: center;
+  text-shadow: none;
+  font-weight: 600;
+  color: #424242;
+}
+header nav ul.right li .notification-menu .bordered-link:hover {
+  background: none;
+  border-bottom: 4px solid #2969bf;
+  color: #2969bf;
+}
+header nav ul.right li.active {
+  background: #303030;
+}
+header nav ul.right li.active:hover {
+  background: #303030;
+}
+header nav ul.right li.active a {
+  position: relative;
+  padding: 15px 10px 10px 12px;
+}
+header nav ul.right li.active a .count {
+  display: none;
+}
+header nav ul li {
+  float: left;
+  position: relative;
+}
+header nav ul li .marker {
+  display: none;
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  margin: auto;
+  background: url(../images/marker-sprite.png) 0 -50px no-repeat;
+  *left: 50%;
+  *margin-left: -4px;
+  z-index: 1000;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2 / 1), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  header nav ul li .marker {
+    background: url(../images/marker-sprite@2x.png) 0 -50px no-repeat;
+    background-size: 16px auto;
+  }
+}
+header nav ul li a {
+  position: relative;
+  display: block;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 19px 23px 20px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+}
+header nav ul li a .icon {
+  margin-left: 6px;
+}
+header nav ul li.active {
+  background: #303030 url(../images/marker-sprite.png) center 99% no-repeat;
+  box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #4d4d4d;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2 / 1), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  header nav ul li.active {
+    background: #303030 url(../images/marker-sprite@2x.png) center 99% no-repeat;
+    background-size: 16px auto;
+  }
+}
+header nav ul li.active a {
+  padding: 19px 22px 20px 23px;
+}
+header nav ul li.active:hover {
+  background: #303030 url(../images/marker-sprite.png) center 99% no-repeat;
+  box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #4d4d4d;
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2 / 1), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx) {
+  header nav ul li.active:hover {
+    background: #303030 url(../images/marker-sprite@2x.png) center 99% no-repeat;
+    background-size: 16px auto;
+  }
+}
+header nav ul li.active.dd {
+  background: #303030;
+}
+header nav ul li.active.dd:hover {
+  background: #303030;
+}
+header nav ul li.active .marker {
+  display: block;
+}
+header nav ul li:hover {
+  background: #6d6d6d;
+  box-shadow: inset 1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+header nav ul li:hover a {
+  color: #fff;
+}
+header nav ul li .submenu {
+  display: none;
+  position: absolute;
+  width: 287px;
+  background: #fff;
+  z-index: 1000;
+  box-shadow: 0 1px 18px rgba(0, 0, 0, 0.24);
+}
+header nav ul li .submenu ul {
+  list-style: none;
+  padding: 10px 0 0;
+  margin: 0;
+  width: 100%;
+}
+header nav ul li .submenu ul.no-bordered-link {
+  padding: 10px 0;
+}
+header nav ul li .submenu ul li {
+  float: none;
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+header nav ul li .submenu ul li:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header nav ul li .submenu ul li a {
+  display: block;
+  padding: 0;
+  text-shadow: none;
+  color: #424242;
+  font-size: 14px;
+}
+header nav ul li .submenu ul li a:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header nav ul li .submenu ul li a:hover {
+  color: #2969bf;
+}
+header nav ul li .submenu ul li a .arrow {
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 0;
+  width: 24px;
+  padding-top: 11px;
+  padding-left: 17px;
+  text-align: center;
+}
+header nav ul li .submenu ul li a .text {
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 13px 0 11px;
+  line-height: 1;
+}
+header nav ul li .submenu ul li a .count {
+  float: right;
+  margin: 9px 17px 0 0;
+  border-radius: 3px;
+  background: #dddddd;
+  color: #424242;
+  text-align: center;
+  padding: 2px 4px;
+  min-width: 22px;
+}
+header nav ul li .submenu ul li a.emergency .count {
+  background: #c73434;
+  color: #421e1e;
+}
+header nav ul li .submenu ul li a.emergency:hover .count {
+  background: #ce393d;
+}
+header nav ul li .submenu ul li a.owned .count {
+  background: #1d8034;
+  color: #0d4e1c;
+}
+header nav ul li .submenu ul li a.owned:hover .count {
+  background: #00ad4e;
+}
+header nav ul li .submenu ul li a.flagged .count {
+  background: #ffef9f;
+  color: #2e3b4c;
+}
+header nav ul li .submenu ul li a.flagged:hover .count {
+  background: #e5d894;
+}
+header nav ul li .submenu ul li a:hover .count {
+  background: #c6c6c6;
+}
+header nav ul li .submenu ul li a .more {
+  float: left;
+  padding: 16px 0 15px;
+  height: 14px;
+  margin: 0;
+}
+header nav ul li .submenu ul li:hover {
+  box-shadow: none;
+  background: transparent;
+}
+header nav ul li .submenu ul li.bordered-link {
+  border-top: 1px solid #e7e7e7;
+  border-bottom: 4px solid #6c6c6c;
+  margin-top: 13px;
+}
+header nav ul li .submenu ul li.bordered-link a {
+  display: block;
+  padding: 22px 0;
+  text-align: center;
+}
+header nav ul li .submenu ul li.bordered-link:hover {
+  border-bottom: 4px solid #2969bf;
+}
+header .user {
+  float: right;
+  padding: 8px 1.5625% 0 0;
+  height: 43px;
+}
+header .user .logged-out {
+  display: none;
+  float: left;
+  background: #2969bf;
+  color: #fff;
+  text-decoration: none;
+  padding: 11px 17px 13px 20px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+header .user .logged-out i {
+  margin-right: 9px;
+}
+header .user .logged-in {
+  display: block;
+  margin-top: 4px;
+  position: relative;
+  padding-top: 1px;
+}
+header .user .logged-in:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header .user .logged-in .submenu {
+  display: none;
+  position: absolute;
+  z-index: 500;
+  *z-index: -1;
+  width: 100%;
+  background: #fff;
+  top: 36px;
+  left: 0;
+  padding: 0;
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.15);
+  border-top: 1px solid #e7e7e7;
+}
+@media screen and (max-width: 1004px) {
+  header .user .logged-in .submenu {
+    width: 300px;
+    right: 0;
+    left: auto;
+  }
+}
+header .user .logged-in .submenu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+header .user .logged-in .submenu ul li {
+  float: none;
+  display: block;
+  padding: 0;
+  margin: 0;
+}
+header .user .logged-in .submenu ul li:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header .user .logged-in .submenu ul li a {
+  display: block;
+  padding: 0;
+  text-shadow: none;
+  color: #424242;
+  font-size: 14px;
+}
+header .user .logged-in .submenu ul li a:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+header .user .logged-in .submenu ul li a:hover {
+  color: #2969bf;
+}
+header .user .logged-in .submenu ul li a .arrow {
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 13px 0;
+  line-height: 19px;
+  width: 24px;
+  padding-left: 17px;
+  text-align: center;
+}
+header .user .logged-in .submenu ul li a .text {
+  display: block;
+  float: left;
+  margin: 0;
+  padding: 13px 0;
+  line-height: 19px;
+}
+header .user .logged-in .submenu ul li:hover {
+  box-shadow: none;
+  background: transparent;
+}
+header .user .logged-in .submenu ul li.bordered-link {
+  border-top: 1px solid #e7e7e7;
+  border-bottom: 4px solid #6c6c6c;
+}
+header .user .logged-in .submenu ul li.bordered-link a {
+  display: block;
+  padding: 22px 0;
+  text-align: center;
+}
+header .user .logged-in .submenu ul li.bordered-link:hover {
+  border-bottom: 4px solid #2969bf;
+}
+header .user .logged-in h2 {
+  position: relative;
+  float: left;
+  display: block;
+  font-size: 17px;
+  padding: 9px 12px 13px;
+  color: #fff;
+}
+header .user .logged-in h2 span {
+  display: block;
+  line-height: 18px;
+}
+header .user .logged-in h2:after {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 6px;
+  bottom: 0;
+  margin: auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+header .user .logged-in.active {
+  background: #fff;
+  border-radius: 3px 3px 0 0;
+  border-bottom: 1px solid #e7e7e7;
+  padding-top: 0;
+}
+header .user .logged-in.active h2 {
+  color: #424242;
+}
+header .user .logged-in.active figure {
+  border-top: 1px solid #e7e7e7;
+}
+header .user .logged-in.active .toggler {
+  border: 1px solid #e7e7e7;
+  padding: 8px 0 15px;
+}
+header .user .logged-in .toggler {
+  float: left;
+  width: 33px;
+  padding: 8px 0 15px;
+  height: 11px;
+  background: #424242;
+  text-align: center;
+  border-radius: 0 3px 0 0;
+  border: 1px solid #424242;
+}
+header .user .logged-in .toggler i {
+  color: #fff;
+}
+
+/* ========== TABLET ========== */
+@media screen and (max-width: 1004px) {
+  header nav ul li a {
+    font-size: 14px;
+    padding: 19px 10px 20px;
+  }
+  header nav ul li.active a {
+    padding: 19px 9px 20px 10px;
+  }
+  header nav ul.right li a {
+    padding: 11px 9px 11px;
+  }
+  header nav ul.right li a .count {
+    top: 14px;
+    right: 16px;
+  }
+  header nav ul.right li .marker {
+    bottom: 1px;
+  }
+  header nav ul.right li.active a {
+    padding: 11px 8px 11px 10px;
+  }
+  header nav .user .logged-in {
+    margin-top: 0;
+  }
+  header nav .user .logged-in h2 {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    padding: 13px 12px 9px;
+  }
+  header nav .user .logged-in h2 span {
+    display: none;
+  }
+  header nav .user .logged-in h2:after {
+    display: block;
+    width: 14px;
+    height: 14px;
+    right: 13px;
+  }
+}
+/* ========== MOBILE ========== */
+@media screen and (max-width: 767px) {
+  header a:hover,
+  header a:focus {
+    text-decoration: none;
+  }
+  header nav #toggle-primary {
+    display: block;
+    font-weight: 700;
+    color: #fff;
+    float: left;
+    line-height: 57px;
+    padding: 0 24px 0 18px;
+  }
+  header nav #toggle-primary:before {
+    font-size: 33px;
+    padding-top: 7px;
+  }
+  header nav #toggle-primary.active {
+    background: #fff;
+    color: #424242;
+  }
+  header nav ul.primary {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 57px;
+    width: 100%;
+    padding: 0;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.2);
+  }
+  header nav ul.primary.active {
+    display: block;
+  }
+  header nav ul.primary li {
+    float: none;
+    width: 100%;
+    background: #fff;
+    margin: 0;
+    border-bottom: 1px solid #e7e7e7;
+  }
+  header nav ul.primary li a {
+    background: #fff;
+    text-shadow: none;
+    color: #424242;
+    font-size: 16px;
+    padding: 18px 9px 18px 24px;
+  }
+  header nav ul.primary li a span .icon {
+    display: block;
+    float: right;
+    font-size: 14px;
+    padding: 6px 8px 6px 0;
+  }
+  header nav ul.primary li.active {
+    border-right: 0;
+  }
+  header nav ul.primary li .submenu {
+    position: relative;
+    display: none;
+    width: 100%;
+    box-shadow: none;
+    padding: 0;
+    background: #f5f5f5;
+  }
+  header nav ul.primary li .submenu ul {
+    width: auto;
+    float: none;
+    padding: 0;
+  }
+  header nav ul.primary li .submenu ul li {
+    padding: 0;
+  }
+  header nav ul.primary li .submenu ul li a {
+    font-size: 16px;
+    background: #f5f5f5;
+    padding: 22px 10px 22px 24px;
+  }
+  header nav ul.primary li .submenu ul li a .text {
+    width: auto;
+    padding: 0;
+  }
+  header nav ul.primary li .submenu ul li a .icon {
+    display: none;
+  }
+  header nav ul.primary li .submenu ul li a .icon.arrow {
+    padding: 0;
+  }
+  header nav ul.primary li .submenu ul li.bordered-link {
+    border-top: 0;
+    margin-top: 0;
+  }
+  header nav ul.primary li .marker {
+    display: none;
+  }
+  header nav ul.right {
+    margin-right: 8px;
+  }
+  header nav ul.right li {
+    position: static;
+  }
+  header nav ul.right li .submenu.notification-menu {
+    display: none;
+    top: 56px;
+    left: 0;
+    position: absolute;
+    background: #ffffff;
+    width: 100%;
+  }
+  header nav ul.right li .marker {
+    right: auto;
+    left: auto;
+    margin-left: 17px;
+  }
+  header nav .user .logged-in h2 span {
+    display: none;
+  }
+  header nav .user .logged-in .submenu {
+    width: 300px;
+    left: auto;
+    right: 0;
+  }
+  header nav .user .logged-in .submenu ul li a {
+    font-size: 16px;
+  }
+}
+.dd > a {
+  display: block;
+}
+.dd > a:after {
+  content: "";
+  display: table;
+  clear: both;
+}

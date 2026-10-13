@@ -1,0 +1,70 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_query_queries` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `description` TEXT,
+				  `helpText` TEXT,
+				  PRIMARY KEY (`queryID`)
+				) ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_query_allowed_search_services` (
+				  `queryID` int(10) unsigned NOT NULL,
+				  `service` varchar(8) NOT NULL,
+				  PRIMARY KEY (`queryID`,`service`),
+				  CONSTRAINT `FK_pud_query_allowed_search_services_1` FOREIGN KEY (`queryID`) REFERENCES `pud_query_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `pud_query_instances` (
+				  `queryInstanceID` int(10) unsigned NOT NULL,
+				  `queryID` int(10) unsigned NOT NULL,
+				  `propertyUnitDesignation` varchar(255) DEFAULT NULL,
+				  `propertyUnitNumber` varchar(255) DEFAULT NULL,
+				  PRIMARY KEY (`queryInstanceID`),
+				  KEY `FK_pud_query_instances_1` (`queryID`),
+				  CONSTRAINT `FK_pud_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `pud_query_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_query_queries` ADD COLUMN `setAsAttribute` BOOLEAN NOT NULL AFTER `helpText`, ADD COLUMN `attributeName` VARCHAR(255) AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_query_queries` ADD COLUMN `useAddressAsResult` TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER `helpText`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_query_instances` ADD COLUMN `address` VARCHAR(255) NULL DEFAULT NULL AFTER `propertyUnitNumber`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `pud_query_instances` ADD COLUMN `propertyObjectIdentity` VARCHAR(255) NULL DEFAULT NULL AFTER `propertyUnitNumber`;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

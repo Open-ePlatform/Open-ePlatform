@@ -1,0 +1,181 @@
+#flowlist_wrapper {
+	background: #F5F5F5;
+	padding: 20px;
+	border: 1px solid #E0E0E0;
+}
+
+#flowlist_wrapper table tr {
+	cursor: pointer;
+}
+
+#flowlist_wrapper table.dataTable.hover tbody tr:hover:not(:first-child) td,
+#flowlist_wrapper table.dataTable.display tbody tr:hover:not(:first-child) td {
+  border-top: 1px solid #1E90FF; /* DodgerBlue */
+}
+#flowlist_wrapper table.dataTable.hover tbody tr:hover + tr td,
+#flowlist_wrapper table.dataTable.display tbody tr:hover + tr td {
+  border-top: 1px solid #1E90FF;
+}
+#flowlist_wrapper table.dataTable.hover tbody tr:hover td:first-child,
+#flowlist_wrapper table.dataTable.display tbody tr:hover td:first-child{
+  border-left: 1px solid #1E90FF;
+}
+#flowlist_wrapper table.dataTable.hover tbody tr:hover td:last-child,
+#flowlist_wrapper table.dataTable.display tbody tr:hover td:last-child{
+	border-right: 1px solid #1E90FF;
+}
+
+#flowlist_wrapper .toolbar-extension {
+	font-size: 14px;
+}
+
+/* tools menu */
+
+.flowadmin-menu {
+	display: block;
+/* 	min-width: 250px; */
+	background: #5B5A5F;
+	position: relative;
+	padding: 5px 10px 5px 10px;
+	border-radius: 3px 3px 0 0;
+	border: 1px solid #e7e7e7;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.flowadmin-menu.active {
+	background: #5B5A5F;
+	border-radius: 3px 3px 0 0;
+	border-bottom: 1px solid #e7e7e7;
+}
+
+.flowadmin-menu a {
+	color: #fff;
+}
+
+.flowadmin-menu a:hover {
+	text-decoration: none;
+}
+
+.flowadmin-menu ul {
+	list-style: none;
+	float: left;
+	padding: 5px;
+	margin: 5px;
+	width: calc(100% - 20px); /* 2 * (padding + margin)  */
+}
+
+.flowadmin-menu li {
+	float: left;
+	clear: both;
+	width: 100%;
+}
+
+.flowadmin-menu li:not(:last-child) {
+	padding-bottom: 7px;
+}
+
+.flowadmin-menu span {
+/* 	line-height: 18px; */
+}
+
+.flowadmin-menu .menu-arrow {
+	display: inline-block;
+	float: right;
+}
+
+.flowadmin-menu .submenu {
+	display: none;
+	position: absolute;
+	z-index: 500;
+	*z-index: -1;
+	width: 100%;
+	background: #5B5A5F;
+	top: 30px;
+	left: 0;
+	padding: 0;
+	box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.15);
+	border-top: 1px solid #e7e7e7;
+	cursor: default;
+}
+
+.flowadmin-menu .submenu a {
+	float: left;
+	width: 100%;
+}
+
+.flowadmin-menu .submenu a:hover {
+	background-color: #7d7c83;
+}
+
+.flowadmin-menu .submenu a .menu-icon {
+	float: right;
+}
+
+
+/* Datatables */
+
+.dataTables_paginate a.current {
+	position: relative;
+	width: auto;
+	height: auto;
+	left: unset;
+	top: unset;
+	text-indent: unset;
+	z-index: unset;
+}
+
+.dataTables_wrapper {
+	margin-bottom: 10px;
+}
+
+.dataTables_wrapper .dataTables_filter > * {
+	float: right;
+	margin-left: 5px;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+	margin-top: 0;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+	width: 200px;
+	padding: 6.5px 10px;
+	line-height: 1;
+}
+
+.dataTables_wrapper .dataTables_length {
+  margin-left: 50px;
+}
+
+.dataTables_wrapper .dataTables_length label {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.dataTables_wrapper .dataTables_length select {
+	width: 100px;
+	font-weight: 400;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+	padding-top: 10px;
+}
+
+.dataTables_wrapper .dataTables_paginate .btn {
+	padding: 8px 12px;
+}
+
+.dataTables_wrapper .dataTables_paginate .btn.current {
+	border: 1px solid black;
+}
+
+.dataTables_wrapper .dataTables_paginate .btn.disabled:hover {
+	padding-top: 8px !important;
+}
+
+.dataTables_wrapper td a {
+	color: inherit;
+}

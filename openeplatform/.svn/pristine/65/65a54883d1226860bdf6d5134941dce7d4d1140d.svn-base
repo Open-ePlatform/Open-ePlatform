@@ -1,0 +1,171 @@
+.login-overlay-shadow {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	background: url(../images/black_overlay.png);
+	background: rgba(0, 0, 0, .7);
+	z-index: 999;
+}
+
+.login-overlay {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	*top: 50%;
+	*left: 50%;
+	*margin-top: -273px;
+	*margin-left: -322px;
+	width: 644px;
+	height: 557px;
+	background: #fff;
+	z-index: 1000;
+	border-radius: 3px;
+	font-size: 16px;
+
+	h2 {
+		line-height: 1;
+		text-align: center;
+		padding: 26px 0 0 0;
+		color: #0b1012;
+	}
+
+	.close {
+		position: absolute;
+		right: 0;
+		padding: 15px 19px 0 0;
+		color: #0b1012;
+		z-index: 1001;
+		background: #fff;
+		border-radius: 0 3px 0 0;
+
+		a {
+			display: block;
+			width: 11px;
+			height: 11px;
+
+			&:before {
+				vertical-align: top;
+			}
+		}
+	}
+
+	.excerpt {
+		display: block;
+		text-align: center;
+		padding: 29px 85px 0;
+	}
+
+	h3 {
+		position: relative;
+		border-bottom: 1px solid $mainBorderColor;
+		font-weight: 600;
+		font-size: 16px;
+		height: 12px;
+		color: #0b1012;
+		margin: 32px 0 30px 0;
+
+		span {
+			position: absolute;
+			display: block;
+			background: #fff;
+			width: 161px;
+			text-align: center;
+			top: 0;
+			right: 0;
+			left: 0;
+			margin: auto;
+			*left: 50%;
+			*margin-left: -80px;
+		}
+	}
+
+	.buttons {
+		list-style: none;
+		margin: 0;
+		padding: 0 0 30px 0;
+		border-bottom: 1px solid $mainBorderColor;
+		line-height: 1;
+
+		li {
+			padding: 0 0 7px 0;
+			text-align: center;
+
+			.btn {
+				margin: 0 auto;
+				padding: 15px 0;
+				width: 183px;
+				text-align: center;
+
+				&:hover {
+					padding: 14px 0 15px;
+				}
+			}
+		}
+	}
+
+	.info {
+		display: block;
+		padding: 35px 0;
+		font-size: 14px;
+		font-weight: 600;
+		text-align: center;
+
+		a {
+			color: $mainAccentColor;
+
+			&:hover {
+				border-bottom: 1px dotted $mainAccentColor;
+			}
+		}
+	}
+}
+
+/* ========== MOBILE ========== */
+
+@include media($mobile) {
+	.login-overlay {
+		position: absolute;
+		width: 100%;
+		margin: 0;
+		top: 10%;
+		bottom: auto;
+		height: auto;
+
+		.excerpt {
+			font-size: 14px;
+			width: 90%;
+			left: 0;
+			margin: 0;
+			right: auto;
+			padding: 16px 5% 0;
+		}
+
+		h3 {
+			margin: 15px 0;
+		}
+
+		.buttons {
+			padding: 0;
+
+			li {
+				padding: 0 0 15px;
+
+				.btn {
+					margin: 0 5%;
+					width: auto;
+					font-size: 20px;
+				}
+			}
+		}
+
+		.info {
+			padding: 15px 0 35px;
+		}
+	}
+}

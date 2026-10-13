@@ -1,0 +1,63 @@
+{
+   "units":"m",
+   "outputFormat":"$outputFormat",
+   "layout":"$layout",
+   "srs":"$srs",
+   "dpi":$dpi,
+   "attribution": "Kartan har ingen rättsverkan du kan alltså INTE se exakta gränser i denna karttjänst ©Lantmäteriet Geodatasamverkan",
+   "layers":[
+      {
+         "baseURL":"https://extmaptest.sundsvall.se/geoserver/wms",
+         "opacity":1,
+         "singleTile":true,
+         "type":"WMS",
+         "layers":[
+            "$baseLayer"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ]
+      },
+      {
+         "baseURL":"https://extmaptest.sundsvall.se/geoserver/wms",
+         "opacity":1,
+         "singleTile":true,
+         "type":"WMS",
+         "layers":[
+            "Lantmateriet:fastighet_granser"
+         ],
+         "format":"image/png",
+         "styles":[
+            ""
+         ],
+         "customParams":{
+            "TRANSPARENT":true
+         }
+      },
+      {
+         "type":"Vector",
+         "styles":{
+            "Point": {
+                "pointRadius": 30,
+                "externalGraphic": "http://sundsvall.e-tjansteportalen.se/mapclient-riges/images/point_cross.png"
+            }
+            $labelStyles
+         },
+         "styleProperty":"_style",
+         "geoJson":{
+            "type":"FeatureCollection",
+            "features": $features
+         },
+         "name":"Drawings",
+         "opacity":1
+      }
+   ],
+   "pages":[
+      {
+         "center": $center,
+         "scale": $scale,
+         "rotation": 0
+      }
+   ]
+}

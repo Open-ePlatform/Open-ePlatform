@@ -1,0 +1,113 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `multi_geometry_map_queries` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `description` TEXT,
+				  `helpText` TEXT,
+				  `startInstruction` TEXT,
+				  `minimumScale` INTEGER,
+				  PRIMARY KEY (`queryID`)
+				) ENGINE = InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `multi_geometry_map_query_instances` (
+				  `queryInstanceID` INTEGER UNSIGNED NOT NULL,
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `propertyUnitDesignation` varchar(255) DEFAULT NULL,
+				  `propertyUnitNumber` int(10) unsigned DEFAULT NULL,
+				  `extent` varchar(255) DEFAULT NULL,
+				  `epsg` varchar(15) DEFAULT NULL,
+				  `visibleBaseLayer` VARCHAR(255) DEFAULT NULL,
+				  PRIMARY KEY (`queryInstanceID`),
+				  CONSTRAINT `FK_multi_geometry_map_query_instances_1` FOREIGN KEY (`queryID`) REFERENCES `multi_geometry_map_queries` (`queryID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE = InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `multi_geometry_map_query_instance_geometries` (
+				  `geometryID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				  `queryInstanceID` int(10) unsigned NOT NULL,
+				  `geometry` text NOT NULL,
+				  `config` text DEFAULT NULL,
+				  PRIMARY KEY (`geometryID`),
+				  KEY `FK_multi_geometry_map_query_instance_geometries_1` (`queryInstanceID`),
+				  CONSTRAINT `FK_multi_geometry_map_query_instance_geometries_1` FOREIGN KEY (`queryInstanceID`) REFERENCES `multi_geometry_map_query_instances` (`queryInstanceID`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+			]]>
+		</Query>
+	</Script>
+	<Script version="2">
+		<Query>
+			<![CDATA[
+			ALTER TABLE `multi_geometry_map_query_instances` ADD COLUMN `propertyUnitGeometry` VARCHAR(255) AFTER `visibleBaseLayer`;
+			]]>
+		</Query>
+	</Script>
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `multi_geometry_map_query_instances` ADD COLUMN `smallPNG` BLOB AFTER `visibleBaseLayer`, ADD COLUMN `largePNG` MEDIUMBLOB AFTER `smallPNG`;
+			]]>
+		</Query>
+	</Script>
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `multi_geometry_map_query_instances` MODIFY COLUMN `smallPNG` MEDIUMBLOB DEFAULT NULL, MODIFY COLUMN `largePNG` LONGBLOB DEFAULT NULL;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `multi_geometry_map_query_instances` CHANGE COLUMN `smallPNG` `firstMapImage` MEDIUMBLOB DEFAULT NULL,
+				 CHANGE COLUMN `largePNG` `secondMapImage` LONGBLOB DEFAULT NULL,
+				 ADD COLUMN `thirdMapImage` LONGBLOB AFTER `secondMapImage`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `multi_geometry_map_query_instances` ADD COLUMN `firstMapImageDpi` INTEGER UNSIGNED AFTER `propertyUnitGeometry`,
+				 ADD COLUMN `firstMapImageScale` INTEGER UNSIGNED AFTER `firstMapImageDpi`,
+				 ADD COLUMN `firstMapImageLayout` VARCHAR(255) AFTER `firstMapImageScale`,
+				 ADD COLUMN `firstMapImageFormat` VARCHAR(255) AFTER `firstMapImageLayout`,
+				 ADD COLUMN `secondMapImageDpi` INTEGER UNSIGNED AFTER `firstMapImageFormat`,
+				 ADD COLUMN `secondMapImageScale` INTEGER UNSIGNED AFTER `secondMapImageDpi`,
+				 ADD COLUMN `secondMapImageLayout` VARCHAR(255) AFTER `secondMapImageScale`,
+				 ADD COLUMN `secondMapImageFormat` VARCHAR(255) AFTER `secondMapImageLayout`,
+				 ADD COLUMN `thirdMapImageDpi` INTEGER UNSIGNED AFTER `secondMapImageFormat`,
+				 ADD COLUMN `thirdMapImageScale` INTEGER UNSIGNED AFTER `thirdMapImageDpi`,
+				 ADD COLUMN `thirdMapImageLayout` VARCHAR(255) AFTER `thirdMapImageScale`,
+				 ADD COLUMN `thirdMapImageFormat` VARCHAR(255) AFTER `thirdMapImageLayout`;
+			]]>
+		</Query>
+	</Script>	
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				UPDATE multi_geometry_map_query_instances SET firstMapImageDpi = 127, firstMapImageScale = 400, firstMapImageLayout = 'OH_PNG', firstMapImageFormat = 'png' WHERE firstMapImage IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE multi_geometry_map_query_instances SET secondMapImageDpi = 56, secondMapImageScale = 1000, secondMapImageLayout = 'OH_PNG_LARGE', secondMapImageFormat = 'png' WHERE secondMapImage IS NOT NULL;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				UPDATE multi_geometry_map_query_instances SET thirdMapImageDpi = 127, thirdMapImageScale = 400, thirdMapImageLayout = 'OEP_A4_Landscape', thirdMapImageFormat = 'pdf' WHERE thirdMapImage IS NOT NULL;
+			]]>
+		</Query>
+	</Script>
+	
+</DBScripts>

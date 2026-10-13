@@ -1,0 +1,33 @@
+@CHARSET "ISO-8859-1";
+
+.btn-upload {
+	position: relative;
+}
+
+.btn-upload:has(input[type="file"]:focus-visible) {
+	border-color: #424242;
+ 	outline: 3px dotted;
+	outline-offset: 3px;
+    outline-color: #424242;
+}
+
+input[type="file"].fileuploader {
+	cursor: pointer;
+	display: block !important;
+	font-size: 22px;
+	margin: 0;
+	opacity: 0;
+	filter: alpha(opacity: 0);
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	visibility: visible;
+	width: 100%;
+}
+
+.upload.no-hover:hover {
+  background: #fff;
+  border-color: #cacaca;
+}

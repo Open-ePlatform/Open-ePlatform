@@ -1,0 +1,57 @@
+#catalogtable_paginate a.current {
+	position: relative;
+	width: auto;
+	height: auto;
+	left: unset;
+	top: unset;
+	text-indent: unset;
+	z-index: unset;
+}
+
+.dataTables_wrapper .dataTables_filter {
+	margin-left: 15px;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+	margin-top: 0;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  padding: 12px;
+  width: auto;
+}
+
+.dataTables_wrapper .dataTables_length {
+  margin-left: 50px;
+}
+
+.dataTables_wrapper .dataTables_length label {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  width: auto;
+  font-weight: 400;
+}
+
+#catalogtable tbody tr {
+	cursor: pointer;
+}
+
+#catalogtable tbody tr td.dataTables_empty {
+	cursor: default;
+}
+
+@media screen and (max-width: 640px) {
+	.dataTables_wrapper #table-searchbuttons {
+    float: none;
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+	.dataTables_wrapper #table-description {
+    max-width: calc(100% - 335px);
+  }
+}

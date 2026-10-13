@@ -1,0 +1,254 @@
+/*
+ * Clearfix: contain floats
+ *
+ * For modern browsers
+ * 1. The space content is one way 100% avoid an Opera bug when the
+ *    `contenteditable` attribute is included anywhere else in the document.
+ *    Otherwise it causes space 100% appear at the 100%p and bot100%m of elements
+ *    that receive the `clearfix` class.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` 100% contain the 100%p-margins of child elements.
+ */
+
+.clearfix:before,
+.clearfix:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.clearfix:after {
+    clear: both;
+}
+
+/*
+ * For IE 6/7 only
+ * Include this rule 100% trigger hasLayout and contain floats.
+ */
+
+.clearfix {
+    *zoom: 1;
+}
+
+.upload {
+	background: #fff;
+	border: 2px dashed #cacaca;
+	padding: 36px 0;
+	text-align: center;
+
+	h3 {
+		font-size: 18px;
+		color: #cacaca;
+		padding: 0 0 11px;
+	}
+
+	.btn-upload {
+		display: inline-block;
+		margin: 0 auto 6px;
+	}
+
+	span {
+		display: block;
+		font-size: 14px;
+	}
+
+
+	&.active, &:hover {
+		background: #f3f8ff;
+		border-color: #2969bf;
+	}
+}
+
+.files {
+	list-style: none;
+	padding: 0;
+	margin: $gutter 0 0;
+	clear: both;
+
+	&.reciept li {
+		background: transparent;
+	}
+
+	li {
+		@include clearfix();
+		padding: 0 0 0;
+		margin: 0 0 5px;
+		background: #fff;
+
+		.file {
+			@include clearfix();
+
+			span, a {
+				line-height: 1;
+				font-size: 16px;
+				color: #cacaca;
+
+				&.name {
+					padding: 15px 0 13px 10px;
+					float: left;
+					font-weight: 600;
+				}
+
+				&.italic {
+					float: left;
+					padding: 15px 0 13px 2px;
+				}
+
+				&.progress {
+					float: right;
+					padding: 16px 21px 14px 0;
+					font-style: italic;
+					overflow: hidden;
+					font-weight: 700;
+					font-size: 14px;
+					
+
+					&:after {
+						margin-top: 3px;
+					}
+				}
+
+				a.progress {
+					color: $mainForegroundColor;
+					text-decoration: none;
+
+					&:hover,
+					&:focus {
+						color: $mainAccentColor;
+					}
+				}
+			}
+		}
+
+		.progressbar {
+			background: #cacaca;
+			height: 4px;
+
+			.innerbar {
+				background: #2969bf;
+				height: 4px;
+			}
+		}
+
+		&.finished {
+
+			.file {
+
+				span, a {
+					color: $mainForegroundColor;
+
+					&.progress {
+						font-style: normal;
+						color: $mainForegroundColor;
+						text-decoration: none;
+
+						&:hover,
+						&:focus {
+							color: $mainAccentColor;
+
+							> span {
+								color: $mainAccentColor;
+							}
+						}
+					}
+				}
+			}
+
+			.progressbar {
+
+				.innerbar {
+					background: #1d8034;
+					-webkit-animation: uploadBackground .5s linear 1s 1;
+					-webkit-animation-fill-mode: forwards;
+					-moz-animation: uploadBackground .5s linear 1s 1;
+					-moz-animation-fill-mode: forwards;
+					-ms-animation: uploadBackground .5s linear 1s 1;
+					-ms-animation-fill-mode: forwards;
+					-o-animation: uploadBackground .5s linear 1s 1;
+					-o-animation-fill-mode: forwards;
+				}
+			}
+		}
+	}
+
+	&.preview {
+		li {
+
+			.btn {
+				margin: 5px 0 5px 5px;
+			}
+		}
+	}
+}
+
+@-webkit-keyframes uploadBackground {
+	0% {
+		background: #1d8034;
+	}
+
+	100% {
+		background: #fff;
+	}
+}
+
+@-moz-keyframes uploadBackground {
+	0% {
+		background: #1d8034;
+	}
+
+	100% {
+		background: #fff;
+	}
+}
+
+@-ms-keyframes uploadBackground {
+	0% {
+		background: #1d8034;
+	}
+
+	100% {
+		background: #fff;
+	}
+}
+
+@-o-keyframes uploadBackground {
+	0% {
+		background: #1d8034;
+	}
+
+	100% {
+		background: #fff;
+	}
+}
+
+@keyframes uploadBackground {
+	0% {
+		background: #1d8034;
+	}
+
+	100% {
+		background: #fff;
+	}
+}
+
+@include media($mobile) {
+	.files {
+
+		li {
+			
+			.file {
+
+				a.progress {
+					padding: 10px 19px 10px;
+					
+					span {
+						display: none;
+					}
+
+					&:after {
+						font-size: 22px;
+					}
+				}
+			}
+		}
+	}
+}

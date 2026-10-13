@@ -1,0 +1,79 @@
+.ui-tooltip {
+	position: absolute;
+	z-index: 101;
+	text-align: left;
+	font-style: normal;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 400;
+	font-size: 14px;
+	
+	color: #fff;
+	padding: 12px;
+	background: #303030;
+	border-radius: 4px;
+
+	.marker {
+		position: absolute;
+		display: block;
+		bottom: -9px;
+		right: 15px;
+		background: url(../images/marker-sprite.png) 0 -20px no-repeat;
+		width: 16px;
+		height: 10px;
+
+		@include hidpi(2.0) {
+			background: url(../images/marker-sprite@2x.png) 0 -20px no-repeat;
+			background-size: 16px auto;
+		}
+	}
+
+	&.ui-tooltip-flip {
+
+		.marker {
+			left: 15px;
+		}
+	}
+}
+
+.oep-tooltip {
+	display: none;
+	position: absolute;
+	text-align: left;
+	font-style: normal;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-weight: 400;
+	font-size: 14px;	
+	color: #fff;
+	padding: 12px;
+	background: #303030;
+	border-radius: 4px;
+	bottom: 40px;
+	right: -1.5px;
+
+	@include hidpi(2.0) {
+		bottom: 44px;
+		right: -2px;
+	}
+
+	.marker {
+		position: absolute;
+		display: block;
+		bottom: -9px;
+		right: 15px;
+		background: url(../images/marker-sprite.png) 0 -20px no-repeat;
+		width: 16px;
+		height: 10px;
+
+		@include hidpi(2.0) {
+			background: url(../images/marker-sprite@2x.png) 0 -20px no-repeat;
+			background-size: 16px auto;
+		}
+	}
+
+	&.oep-tooltip-flip {
+
+		.marker {
+			left: 15px;
+		}
+	}
+}

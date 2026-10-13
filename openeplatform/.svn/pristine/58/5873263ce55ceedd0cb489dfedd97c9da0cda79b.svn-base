@@ -1,0 +1,63 @@
+@CHARSET "ISO-8859-1";
+
+.radiobuttonquery .floatnone {
+	float: none;
+}
+
+.radiobuttonquery span.html-description {
+	padding-bottom: 12px;
+}
+.radiobuttonquery span.html-description > p {
+	margin-bottom: 0;
+}
+
+.radiobuttonquery .validationerror {
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
+} 
+
+.radiobuttonquery .validationerror.commonerror {
+	margin-top: 8px;
+	margin-bottom: 0;
+} 
+
+.radiobuttonquery .validationerror i {
+	margin: unset;
+	margin-right: 5px;
+	
+	display: inline-block;
+	position: relative;
+	right: 0;
+	bottom: 0;
+	width: unset;
+	height: unset;
+}
+
+.radiobuttonquery .help {
+	float: right;
+	font-weight: 700;
+	font-size: 14px;
+}
+
+.radiobuttonquery legend.heading-wrapper {
+	width: auto;
+}
+
+@media screen and (min-width: 767.1px) and (max-width: 1004px) {
+	
+	.radiobuttonquery .alternative.thirty {
+		width: 50%;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	
+	.radiobuttonquery .alternative.thirty, .radiobuttonquery .alternative.fifty {
+		width: 100%;
+	}
+	
+	.radiobuttonquery .help {
+		position: relative;
+	}
+}

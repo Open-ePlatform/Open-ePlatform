@@ -1,0 +1,368 @@
+Searching 58 files for ".heading-wrapper"
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/header.scss:
+   80  						box-shadow: 0 2px 6px rgba(0, 0, 0, .15);
+   81  
+   82: 						.heading-wrapper {
+   83  							font-size: 12px;
+   84  							padding: 6px 11px;
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/boilerplate/boilerplate-footer.scss:
+  162      }
+  163  
+  164:     .heading-wrapper {
+  165          padding-bottom: 0 !important;
+  166  
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/layout/errands.scss:
+   38  	}
+   39  
+   40: 	.heading-wrapper {
+   41  		padding-bottom: 10px;
+   42  
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/layout/layout.scss:
+  202  }
+  203  
+  204: .heading-wrapper {
+  205  	@extend .clearfix;
+  206  	position: relative;
+  ...
+  620  	}
+  621  
+  622: 	div.heading-wrapper, .section-inside div.heading-wrapper {
+  623  		width: auto;
+  624  		margin: 0;
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/layout/service.scss:
+   10  		@include span-columns(6 of 12);
+   11  
+   12: 		.heading-wrapper {
+   13  			@include span-columns(6 of 6);
+   14  			padding: 0;
+   ..
+   20  	}
+   21  
+   22: 	.heading-wrapper {
+   23  		@include span-columns(7 of 7);
+   24  		float: left;
+   ..
+  236  
+  237  		&.receipt {
+  238: 			.heading-wrapper {
+  239  				padding-bottom: 20px;
+  240  			}
+  ...
+  256  	}
+  257  
+  258: 	.heading-wrapper {
+  259  		@include span-columns(12 of 12);
+  260  		float: left;
+  ...
+  592  			@include span-columns(8 of 8);
+  593  
+  594: 			.heading-wrapper {
+  595  				float: none;
+  596  				@include span-columns(8 of 8);
+  ...
+  619  			padding: 16px 3% 30px;
+  620  
+  621: 			.heading-wrapper {
+  622  				padding: 0;
+  623  			}
+  ...
+  660  			padding: 50px 27px 0;
+  661  			
+  662: 			.heading-wrapper {
+  663  				padding: 0;
+  664  			}
+  ...
+  676  		padding: 0 0 16px;
+  677  
+  678: 		.heading-wrapper {
+  679  
+  680  			.heading {
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/layout/settings.scss:
+   27  		article {
+   28  	
+   29: 			.heading-wrapper {
+   30  				padding: 0;
+   31  			}
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/modules/messages.scss:
+  116  	display: none;
+  117  
+  118: 	.heading-wrapper {
+  119  		padding-bottom: 10px;
+  120  	}
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/modules/tabs.scss:
+  178  		padding: 25px 27px 40px;
+  179  
+  180: 		.heading-wrapper {
+  181  			padding: 0;
+  182  		}
+
+17 matches across 8 files
+
+
+Searching 58 files for "nav {"
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/header.scss:
+   20  	}
+   21  
+   22: 	nav {
+   23  		background: #424242;
+   24  		position: relative;
+   ..
+  628  	header {
+  629  
+  630: 		nav {
+  631  
+  632  			ul {
+  ...
+  690  	header {
+  691  
+  692: 		nav {
+  693  
+  694  			#toggle-primary {
+
+3 matches in 1 file
+
+
+Searching 17 files for "service-navigator"
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/step1.html:
+  214  		  			</div>
+  215  		  			<div class="section-full"></div>
+  216: 		  			<ul class="service-navigator">
+  217  	  					<li class="completed">
+  218  	  						<span data-step="1">Vart ska du bygga</span>
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/step1_asofficial.html:
+  236  		  			</div>
+  237  		  			<div class="section-full"></div>
+  238: 		  			<ul class="service-navigator">
+  239  	  					<li class="completed">
+  240  	  						<span data-step="1">Vart ska du bygga</span>
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/step_preview.html:
+  202  		  			</div>
+  203  		  			<div class="section-full"></div>
+  204: 		  			<ul class="service-navigator">
+  205  	  					<li class="completed">
+  206  	  						<span data-step="1">Vart ska du bygga</span>
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/steps_asofficial.html:
+  235  		  			</div>
+  236  		  			<div class="section-full"></div>
+  237: 		  			<ul class="service-navigator">
+  238  	  					<li class="completed">
+  239  	  						<span data-step="1">Vart ska du bygga</span>
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/summary.html:
+  220  		  			<div class="section-full">
+  221  		  				<h2 class="h1">Du kommer gå igenom följande steg:</h2>
+  222: 		  				<ul class="service-navigator">
+  223  		  					<li>
+  224  		  						<span data-step="1">Vart ska du bygga</span>
+
+5 matches across 5 files
+
+
+Searching 58 files for "favourite"
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/layout/layout.scss:
+  394  }
+  395  
+  396: .favourite {
+  397  	cursor: pointer;
+  398  
+  ...
+  403  		margin-top: 2px;
+  404  		text-indent: -9999px;
+  405: 		background: url(../images/favourite.png);
+  406  		background-position: 0 0;
+  407  	}
+  ...
+  430  			margin-top: 5px;
+  431  			text-indent: -9999px;
+  432: 			background: url(../images/favourite_xl.png);
+  433  			background-position: 0 0;
+  434  		}
+  ...
+  469  	}
+  470  
+  471: 	.favourite {
+  472  
+  473  		&.gray {
+  ...
+  677  	}
+  678  
+  679: 	.favourite {
+  680  
+  681  		&:before, &:after {
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/modules/list-widget.scss:
+   12  		padding: 14px 0 11px 3.7313433%;
+   13  
+   14: 		a:not(.delete_favourite):not(.delete), .wrap {
+   15  			@extend .clearfix;
+   16  			position: relative;
+   ..
+   51  			}
+   52  
+   53: 			.delete_favourite {
+   54  				color: $mainForegroundColor;
+   55  				float: left;
+
+7 matches across 2 files
+
+
+Searching 58 files for ":checked"
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/interface/forms.scss:
+  104  }
+  105  
+  106: input[type=radio]:checked + label:before {
+  107  	content: "\2022";
+  108  	font-size: 33px;
+  ...
+  125  }
+  126  
+  127: input[type=checkbox]:checked + label:before {
+  128  	font-family: 'riges-icons';
+  129  	content: "c";
+  ...
+  136  }
+  137  
+  138: input[type=checkbox]:checked + label.disabled:before {
+  139  	content: "c";
+  140  	font-size: 18px;
+  ...
+  147  }
+  148  
+  149: input[type=checkbox]:checked + label.disabled {
+  150  	color: $mainForegroundColor;
+  151  }
+
+4 matches in 1 file
+
+
+Searching 58 files for "nav"
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/style.scss:
+   38  @import "sass-inc/modules/list-widget";
+   39  @import "sass-inc/modules/search-results";
+   40: @import "sass-inc/modules/navigator";
+   41: @import "sass-inc/modules/service-navigator";
+   42  @import "sass-inc/modules/map";
+   43  @import "sass-inc/modules/tabs";
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/header.scss:
+   20  	}
+   21  
+   22: 	nav {
+   23  		background: #424242;
+   24  		position: relative;
+   ..
+  629  	header {
+  630  
+  631: 		nav {
+  632  
+  633  			ul {
+  ...
+  691  	header {
+  692  
+  693: 		nav {
+  694  
+  695  			#toggle-primary {
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/modules.scss:
+    9  @import "modules/list-widget";
+   10  @import "modules/search-results";
+   11: @import "modules/navigator";
+   12: @import "modules/service-navigator";
+   13  @import "modules/map";
+   14  @import "modules/tabs";
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/navigator.scss:
+    1: .navigator {
+    2  	list-style: none;
+    3  }
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/normalize.scss:
+   18  hgroup,
+   19  main,
+   20: nav,
+   21  section,
+   22  summary {
+   ..
+  320   */
+  321  
+  322: nav ul,
+  323: nav ol {
+  324      list-style: none;
+  325      list-style-image: none;
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/boilerplate/boilerplate-footer.scss:
+   48  /*
+   49   * Extends the .visuallyhidden class to allow the element to be focusable
+   50:  * when navigated to via the keyboard: h5bp.com/p
+   51   */
+   52  
+   ..
+  150      }
+  151  
+  152:     nav, header, .modal, .btn, .divider, .info-box, .info-box-message {
+  153          display: none !important;
+  154      }
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/modules/navigator.scss:
+    1: .navigator {
+    2  	list-style: none;
+    3  	padding: 22px $padLR;
+
+/Users/sebastianchristiansson/Documents/Development/Sites/riges.dev.osynlig.se/public_html/sass-inc/modules/service-navigator.scss:
+    1: .service-navigator {
+    2  	@extend .clearfix;
+    3  	border: 1px solid #dddddd;
+    .
+   14  		float: left;
+   15  		padding: 0 28px 0 21px;
+   16: 		background: url(../images/service-navigator-background.png) right -8px no-repeat;
+   17  
+   18  		a {
+   ..
+  110  
+  111  .section-full {
+  112: 	.service-navigator {
+  113  		border: 1px solid #dddddd;
+  114  		margin-bottom: 10px;
+  ...
+  117  }
+  118  
+  119: .navigator-buttons {
+  120  	@extend .clearfix;
+  121  	padding: 30px 0 0;
+  ...
+  160  
+  161  @include media($mobile) {
+  162: 	.service-navigator {
+  163  		height: 48px;
+  164  
+  ...
+  178  					left: 0;
+  179  					height: 48px;
+  180: 					background: #29bf4c url(../images/service-navigator-mobile.png) center right no-repeat;
+  181  				}
+  182  
+  ...
+  195  	}
+  196  
+  197: 	.navigator-buttons {
+  198  
+  199  		&.centered {
+
+21 matches across 8 files

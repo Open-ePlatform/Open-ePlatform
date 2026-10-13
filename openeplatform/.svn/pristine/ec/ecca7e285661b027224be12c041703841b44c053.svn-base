@@ -1,0 +1,119 @@
+.delete-overlay-shadow {
+	@extend .login-overlay-shadow;
+}
+
+.delete-overlay {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	*top: 50%;
+	*left: 50%;
+	*margin-top: -103px;
+	*margin-left: -322px;
+	width: 644px;
+	height: 205px;
+	background: #fff;
+	z-index: 1000;
+	border-radius: 3px;
+	font-size: 16px;
+
+	h2 {
+		line-height: 1;
+		text-align: center;
+		padding: 26px 0 0 0;
+		color: #0b1012;
+	}
+
+	.close {
+		position: absolute;
+		right: 0;
+		padding: 15px 19px 0 0;
+		color: #0b1012;
+		z-index: 1001;
+		background: #fff;
+		border-radius: 0 3px 0 0;
+
+		a {
+			display: block;
+			width: 11px;
+			height: 11px;
+
+			&:before {
+				vertical-align: top;
+			}
+		}
+	}
+
+	.excerpt {
+		display: block;
+		height: 65px;
+		text-align: center;
+		padding: 15px 85px;
+		font-weight: 600;
+	}
+
+	h3 {
+		position: relative;
+		border-bottom: 1px solid $mainBorderColor;
+		font-weight: 700;
+		font-size: 16px;
+		height: 12px;
+		color: #0b1012;
+		margin: 32px 0 30px 0;
+
+		span {
+			position: absolute;
+			display: block;
+			background: #fff;
+			width: 161px;
+			text-align: center;
+			top: 0;
+			right: 0;
+			left: 0;
+			margin: auto;
+			*left: 50%;
+			*margin-left: -80px;
+		}
+	}
+
+	.buttons {
+		text-align: center;
+		margin: 0;
+		padding: 15px 0;
+		border-top: 1px solid $mainBorderColor;
+		line-height: 1;
+
+	}
+
+	.info {
+		display: block;
+		padding: 35px 0;
+		font-size: 14px;
+		font-weight: 600;
+		text-align: center;
+
+		a {
+			color: $mainAccentColor;
+
+			&:hover {
+				border-bottom: 1px dotted $mainAccentColor;
+			}
+		}
+	}
+}
+
+/* ========== MOBILE ========== */
+
+@include media($mobile) {
+	.delete-overlay {
+		width: 96%;
+		*margin-left: -48%;
+
+		.excerpt {
+			padding: 15px;
+		}
+	}
+}

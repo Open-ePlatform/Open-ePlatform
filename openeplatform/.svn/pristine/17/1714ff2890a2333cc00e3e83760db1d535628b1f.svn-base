@@ -1,0 +1,72 @@
+.summary-buttons {
+	list-style: none;
+	margin: 0;
+	padding: 0 0 40px 0;
+
+	li {
+		@include clearfix();
+		display: inline-block;
+		*display: inline;
+		margin: 0 10px 10px 0;
+
+		a {
+			display: block;
+			width: 96px;
+			text-align: center;
+			font-weight: 600;
+			line-height: 1;
+			border-radius: 3px;
+			background: #dddddd;
+			padding: 18px 0;
+			color: $mainForegroundColor;
+			text-decoration: none;
+
+			span {
+				display: block;
+				font-size: 32px;
+				line-height: 1;
+			}
+
+			&:hover {
+				color: inherit;
+				background: #c6c6c6;
+			}
+		}
+
+		&.emergency {
+
+			a {
+				background: #c73434;
+				color: #421e1e;
+
+				&:hover {
+					background: #ce393d;
+				}
+			}
+		}
+
+		&.owned {
+
+			a {
+				background: #1d8034;
+				color: #0d4e1c;
+
+				&:hover {
+					background: #00ad4e;
+				}
+			}
+		}
+
+		&.flagged {
+
+			a {
+				background: #ffef9f;
+				color: #2e3b4c;
+
+				&:hover {
+					background: #e5d894;
+				}
+			}
+		}
+	}
+}

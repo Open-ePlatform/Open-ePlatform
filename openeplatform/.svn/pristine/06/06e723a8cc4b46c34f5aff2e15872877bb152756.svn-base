@@ -1,0 +1,169 @@
+.messages {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+
+	li {
+		@include clearfix();
+		position: relative;
+		border: 1px solid #dddddd;
+		margin: 0 0 26px;
+		padding: 19px 0;
+		background: #fff;
+		font-size: 16px;
+
+		.user {
+			float: left;
+
+			figure {
+				margin: 0 20px;
+				border-radius: 3px;
+				width: 33px;
+				height: 33px;
+				border: 1px solid $mainBorderColor;
+				overflow: hidden;
+				background: #fff;
+
+				img {
+					width: 100%;
+					height: 100%;
+				}
+			}
+		}
+
+		.message {
+			margin-left: 68px;
+			padding: 0 8px;
+		}
+
+		.author {
+			display: block;
+			font-size: 14px;
+			padding-top: 7px;
+			font-weight: 600;
+
+			.time {
+				font-weight: 400;
+			}
+
+			i {
+				display: inline;
+				font-weight: normal;
+				color: #cacaca;
+			}
+		}
+
+		.files {
+			display: block;
+			padding-top: 10px;
+		}
+
+		.marker {
+			position: absolute;
+			background: url(../images/marker-sprite.png) no-repeat;
+			background-position: 0 -10px;
+			width: 16px;
+			height: 10px;
+			left: 27px;
+			bottom: -10px;
+		}
+
+		&.official {
+			background: #f3f8ff;
+
+			.marker {
+				background-position: 0 0;
+				right: 27px;
+				left: auto;
+			}
+		}
+
+		&.unread {
+			background: #f3f8ff;
+			border-color: #2969bf;
+
+			.author {
+
+				i {
+					&:before {
+						color: $mainAccentColor;
+					}
+				}
+			}
+
+			.bullet {
+				display: block;
+				position: absolute;
+				width: 6px;
+				height: 6px;
+				top: 9px;
+				right: 9px;
+
+				i {
+					float: right;
+					display: block;
+					width: 6px;
+					height: 6px;
+					border-radius: 6px;
+					background: $mainAccentColor;
+				}
+			}
+		}
+	}
+}
+
+#new-message,
+#new-note {
+	display: none;
+
+	.heading-wrapper {
+		padding-bottom: 0;
+
+		h2 {
+			padding-bottom: 0;
+			margin-bottom: 0 !important;
+		}
+	}
+
+	input, textarea {
+		margin-bottom: 26px;
+
+		&.btn {
+			margin: 10px 0 0 0;
+		}
+	}
+
+	.btn-inline {
+		-webkit-font-smoothing: antialiased;
+
+		@include media($mobile) {
+			margin: .5em 0 0 !important;
+			display: block !important;
+			font-family: 'Source Sans Pro', sans-serif;
+			width: 100%;
+		}
+	}
+}
+
+/* ========== MOBILE ========== */
+
+@include media($mobile) {
+	.messages {
+		li {
+
+			.user {
+				display: none;
+			}
+
+			.message {
+				margin: 0;
+				padding: 0 1em;
+
+				.btn-file {
+					display: block;
+					text-align: center;
+				}
+			}
+		}
+	}
+}

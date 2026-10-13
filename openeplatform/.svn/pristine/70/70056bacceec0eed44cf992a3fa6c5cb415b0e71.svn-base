@@ -1,0 +1,161 @@
+<DBScripts>
+	<Script version="1">
+		<Query>
+			<![CDATA[
+				CREATE TABLE `file_upload_queries` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `description` TEXT,
+				  `helpText` TEXT,
+				  `maxFileCount` INTEGER UNSIGNED,
+				  `maxFileSize` INTEGER UNSIGNED,
+				  PRIMARY KEY (`queryID`)
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `file_upload_query_extensions` (
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  `extension` VARCHAR(12) NOT NULL,
+				  PRIMARY KEY (`queryID`, `extension`),
+				  CONSTRAINT `FK_file_upload_query_extensions_1` FOREIGN KEY `FK_file_upload_query_extensions_1` (`queryID`)
+				    REFERENCES `file_upload_queries` (`queryID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `file_upload_query_instances` (
+				  `instanceManagerID` INTEGER UNSIGNED NOT NULL,
+				  `queryID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`instanceManagerID`),
+				  CONSTRAINT `FK_file_upload_query_instances_1` FOREIGN KEY `FK_file_upload_query_instances_1` (`queryID`)
+				    REFERENCES `file_upload_queries` (`queryID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_query_instances` CHANGE COLUMN `instanceManagerID` `queryInstanceID` INT(10) UNSIGNED NOT NULL,
+				 DROP PRIMARY KEY,
+				 ADD PRIMARY KEY  USING BTREE(`queryInstanceID`);
+			]]>
+		</Query>
+		<Query>
+			<![CDATA[
+				CREATE TABLE `file_upload_files` (
+				  `fileID` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+				  `name` VARCHAR(255) NOT NULL,
+				  `size` INTEGER UNSIGNED NOT NULL,
+				  `queryInstanceID` INTEGER UNSIGNED NOT NULL,
+				  PRIMARY KEY (`fileID`),
+				  CONSTRAINT `FK_file_upload_files_1` FOREIGN KEY `FK_file_upload_files_1` (`queryInstanceID`)
+				    REFERENCES `file_upload_query_instances` (`queryInstanceID`)
+				    ON DELETE CASCADE
+				    ON UPDATE CASCADE
+				)
+				ENGINE = InnoDB;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="2">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries`
+					ADD COLUMN `setAsAttribute` TINYINT(1) NOT NULL AFTER `maxFileSize`,
+					ADD COLUMN `attributeName` VARCHAR(255) NULL AFTER `setAsAttribute`;
+			]]>
+		</Query>
+	</Script>
+
+	<Script version="3">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `maxFileNameLength` INT(10) UNSIGNED AFTER `attributeName`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="4">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries`
+					ADD COLUMN `attachmentNamePrefixMode` VARCHAR(10) NOT NULL DEFAULT 'QUERY_NAME' AFTER `maxFileNameLength`,
+					ADD COLUMN `attachmentNameCustomPrefix` VARCHAR(80) NULL DEFAULT NULL AFTER `attachmentNamePrefixMode`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="5">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `inlinePDFAttachments` TINYINT UNSIGNED NOT NULL AFTER `maxFileNameLength`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="6">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `lockOnOwnershipTransfer` TINYINT(1) NOT NULL AFTER `inlinePDFAttachments`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="7">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `selectFilesButtonText` VARCHAR(30) NULL AFTER `attachmentNameCustomPrefix`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="8">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `numberInlineAttachments` TINYINT(1) UNSIGNED NOT NULL AFTER `inlinePDFAttachments`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="9">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `hideTitle` TINYINT(1) UNSIGNED NOT NULL AFTER `numberInlineAttachments`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="10">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `hideDescriptionInPDF` TINYINT(1) UNSIGNED NOT NULL AFTER `hideTitle`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="11">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `maxQuerySize` INTEGER UNSIGNED AFTER `maxFileSize`;
+			]]>
+		</Query>
+	</Script>
+	
+	<Script version="12">
+		<Query>
+			<![CDATA[
+				ALTER TABLE `file_upload_queries` ADD COLUMN `excludeFileContentFromXML` BOOLEAN NOT NULL AFTER `selectFilesButtonText`;
+			]]>
+		</Query>
+	</Script>	
+	
+</DBScripts>

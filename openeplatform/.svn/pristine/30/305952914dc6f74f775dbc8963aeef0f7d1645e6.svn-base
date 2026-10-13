@@ -1,0 +1,20 @@
+@charset "ISO-8859-1";
+
+.dropdownquery .validationerror {
+	display: flex;
+	align-items: center;
+	margin-top: 8px;
+	float: none;
+} 
+
+.dropdownquery .validationerror i {
+	margin: unset;
+	margin-right: 5px;
+	
+	display: inline-block;
+	position: relative;
+	right: 0;
+	bottom: 0;
+	width: unset;
+	height: unset;
+}
